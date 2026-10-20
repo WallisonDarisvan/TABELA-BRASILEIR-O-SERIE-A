@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabela Brasileirão Série A | Classificação Interativa</title>
+  <meta name="description" content="Tabela interativa e atualizada do Brasileirão Série A com dados em tempo real extraídos diretamente da estrutura do ge.globo. Pontos (P), Jogos (J) e Vitórias (V).">
+  
+  <!-- Fontes do Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300b04f'><circle cx='12' cy='12' r='10'/><path d='M12 4a8 8 0 0 1 8 8c0 2.2-.9 4.2-2.3 5.7L12 12V4z' fill='%23ffffff'/></svg>">
+</head>
+<body>
+  <div class="app-background">
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Cabeçalho Principal -->
+    <header class="app-header">
+      <div class="header-main">
+        <div class="header-title-container">
+          <h1 class="main-title">
+            <span class="title-gradient">Brasileirão</span>
+            <span class="title-highlight">Série A</span>
+          </h1>
+          <img src="NC%20SPORTS%20LOGO.png" alt="NC Sports Logo" class="header-nc-logo" onerror="this.src='nc-sports-logo.png'">
+        </div>
+      </div>
+    </header>
+
+    <!-- Tabela Interativa -->
+    <main class="table-card">
+
+      <div class="table-responsive-wrapper">
+        <table class="tabela-brasileirao" id="tabelaBrasileirao">
+          <thead>
+            <tr>
+              <th class="th-pos sortable" data-sort="ordem" title="Clique para ordenar por Posição">
+                <div class="th-content">
+                  <span>POS</span>
+                  <span class="sort-indicator" id="sort-icon-ordem"></span>
+                </div>
+              </th>
+              <th class="th-time sortable" data-sort="time" title="Clique para ordenar por Nome">
+                <div class="th-content">
+                  <span>CLASSIFICAÇÃO</span>
+                  <span class="sort-indicator" id="sort-icon-time"></span>
+                </div>
+              </th>
+              <th class="th-stat sortable active" data-sort="pontos" title="Clique para ordenar por Pontos">
+                <div class="th-content">
+                  <span>PONTOS</span>
+                  <span class="sort-indicator" id="sort-icon-pontos">▼</span>
+                </div>
+              </th>
+              <th class="th-stat sortable" data-sort="jogos" title="Clique para ordenar por Jogos">
+                <div class="th-content">
+                  <span>JOGOS</span>
+                  <span class="sort-indicator" id="sort-icon-jogos"></span>
+                </div>
+              </th>
+              <th class="th-stat sortable" data-sort="vitorias" title="Clique para ordenar por Vitórias">
+                <div class="th-content">
+                  <span>VITÓRIAS</span>
+                  <span class="sort-indicator" id="sort-icon-vitorias"></span>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="tabelaCorpo">
+            <!-- As linhas da tabela são renderizadas dinamicamente pelo app.js -->
+            <tr class="loading-row">
+              <td colspan="5">
+                <div class="loading-container">
+                  <div class="spinner"></div>
+                  <p>Carregando tabela oficial do Brasileirão...</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+
+    </main>
+
+    <!-- Modal de Comparação de Times -->
+    <div class="modal-overlay" id="compareModal" style="display: none;">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3>Comparador Direto (P, J, V)</h3>
+          <button class="btn-close-modal" id="btnCloseCompare">&times;</button>
+        </div>
+        <div class="modal-body" id="compareModalBody">
+          <!-- Conteúdo da comparação gerado dinamicamente -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

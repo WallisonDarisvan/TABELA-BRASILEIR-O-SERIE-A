@@ -1,0 +1,227 @@
+{
+  "origem": "https://ge.globo.com/futebol/brasileirao-serie-a/",
+  "atualizadoEm": "2026-10-20T18:09:58.774Z",
+  "totalTimes": 20,
+  "classificacao": [
+    {
+      "ordem": 1,
+      "time": "Flamengo",
+      "sigla": "FLA",
+      "escudo": "https://s.sde.globo.com/media/organizations/2018/04/10/Flamengo-2018.svg",
+      "pontos": 67,
+      "jogos": 31,
+      "vitorias": 20,
+      "variacao": 0,
+      "faixaCor": "#0000ff"
+    },
+    {
+      "ordem": 2,
+      "time": "Palmeiras",
+      "sigla": "PAL",
+      "escudo": "https://s.sde.globo.com/media/organizations/2019/07/06/Palmeiras.svg",
+      "pontos": 66,
+      "jogos": 31,
+      "vitorias": 19,
+      "variacao": 0,
+      "faixaCor": "#0000ff"
+    },
+    {
+      "ordem": 3,
+      "time": "Athletico-PR",
+      "sigla": "CAP",
+      "escudo": "https://s.sde.globo.com/media/organizations/2026/01/07/Athletico-PR.svg",
+      "pontos": 53,
+      "jogos": 31,
+      "vitorias": 15,
+      "variacao": 0,
+      "faixaCor": "#0000ff"
+    },
+    {
+      "ordem": 4,
+      "time": "Cruzeiro",
+      "sigla": "CRU",
+      "escudo": "https://s.sde.globo.com/media/organizations/2021/02/13/cruzeiro_2021.svg",
+      "pontos": 51,
+      "jogos": 31,
+      "vitorias": 15,
+      "variacao": 2,
+      "faixaCor": "#0000ff"
+    },
+    {
+      "ordem": 5,
+      "time": "Fluminense",
+      "sigla": "FLU",
+      "escudo": "https://s.sde.globo.com/media/organizations/2018/03/11/fluminense.svg",
+      "pontos": 51,
+      "jogos": 31,
+      "vitorias": 14,
+      "variacao": -1,
+      "faixaCor": "#00ffff"
+    },
+    {
+      "ordem": 6,
+      "time": "Atlético-MG",
+      "sigla": "CAM",
+      "escudo": "https://s.sde.globo.com/media/organizations/2018/03/10/atletico-mg.svg",
+      "pontos": 50,
+      "jogos": 31,
+      "vitorias": 14,
+      "variacao": 1,
+      "faixaCor": "#008040"
+    },
+    {
+      "ordem": 7,
+      "time": "Bahia",
+      "sigla": "BAH",
+      "escudo": "https://s.sde.globo.com/media/organizations/2018/03/11/bahia.svg",
+      "pontos": 49,
+      "jogos": 31,
+      "vitorias": 13,
+      "variacao": -2,
+      "faixaCor": "#008040"
+    },
+    {
+      "ordem": 8,
+      "time": "Santos",
+      "sigla": "SAN",
+      "escudo": "https://s.sde.globo.com/media/organizations/2018/03/12/santos.svg",
+      "pontos": 45,
+      "jogos": 31,
+      "vitorias": 12,
+      "variacao": 0,
+      "faixaCor": "#008040"
+    },
+    {
+      "ordem": 9,
+      "time": "São Paulo",
+      "sigla": "SAO",
+      "escudo": "https://s.sde.globo.com/media/organizations/2018/03/11/sao-paulo.svg",
+      "pontos": 42,
+      "jogos": 31,
+      "vitorias": 12,
+      "variacao": 1,
+      "faixaCor": "#008040"
+    },
+    {
+      "ordem": 10,
+      "time": "Bragantino",
+      "sigla": "RBB",
+      "escudo": "https://s.sde.globo.com/media/organizations/2021/06/28/bragantino.svg",
+      "pontos": 41,
+      "jogos": 31,
+      "vitorias": 11,
+      "variacao": -1,
+      "faixaCor": "#008040"
+    },
+    {
+      "ordem": 11,
+      "time": "Botafogo",
+      "sigla": "BOT",
+      "escudo": "https://s.sde.globo.com/media/organizations/2019/02/04/botafogo-svg.svg",
+      "pontos": 39,
+      "jogos": 31,
+      "vitorias": 10,
+      "variacao": 2,
+      "faixaCor": "#008040"
+    },
+    {
+      "ordem": 12,
+      "time": "Coritiba",
+      "sigla": "CFC",
+      "escudo": "https://s.sde.globo.com/media/organizations/2018/03/11/coritiba.svg",
+      "pontos": 39,
+      "jogos": 31,
+      "vitorias": 10,
+      "variacao": -1,
+      "faixaCor": "#888"
+    },
+    {
+      "ordem": 13,
+      "time": "Vitória",
+      "sigla": "VIT",
+      "escudo": "https://s.sde.globo.com/media/organizations/2025/12/18/Vitoria_2025.svg",
+      "pontos": 37,
+      "jogos": 31,
+      "vitorias": 10,
+      "variacao": -1,
+      "faixaCor": "#888"
+    },
+    {
+      "ordem": 14,
+      "time": "Mirassol",
+      "sigla": "MIR",
+      "escudo": "https://s.sde.globo.com/media/organizations/2026/07/17/MIrassol.svg",
+      "pontos": 36,
+      "jogos": 31,
+      "vitorias": 9,
+      "variacao": 1,
+      "faixaCor": "#888"
+    },
+    {
+      "ordem": 15,
+      "time": "Vasco",
+      "sigla": "VAS",
+      "escudo": "https://s.sde.globo.com/media/organizations/2021/09/04/vasco_SVG.svg",
+      "pontos": 35,
+      "jogos": 30,
+      "vitorias": 9,
+      "variacao": -1,
+      "faixaCor": "#888"
+    },
+    {
+      "ordem": 16,
+      "time": "Corinthians",
+      "sigla": "COR",
+      "escudo": "https://s.sde.globo.com/media/organizations/2024/10/09/Corinthians_2024_Q4ahot4.svg",
+      "pontos": 33,
+      "jogos": 31,
+      "vitorias": 8,
+      "variacao": 0,
+      "faixaCor": "#888"
+    },
+    {
+      "ordem": 17,
+      "time": "Internacional",
+      "sigla": "INT",
+      "escudo": "https://s.sde.globo.com/media/organizations/2018/03/11/internacional.svg",
+      "pontos": 32,
+      "jogos": 31,
+      "vitorias": 7,
+      "variacao": 0,
+      "faixaCor": "#ff0000"
+    },
+    {
+      "ordem": 18,
+      "time": "Grêmio",
+      "sigla": "GRE",
+      "escudo": "https://s.sde.globo.com/media/organizations/2018/03/12/gremio.svg",
+      "pontos": 31,
+      "jogos": 31,
+      "vitorias": 7,
+      "variacao": 0,
+      "faixaCor": "#ff0000"
+    },
+    {
+      "ordem": 19,
+      "time": "Remo",
+      "sigla": "REM",
+      "escudo": "https://s.sde.globo.com/media/organizations/2021/02/25/Remo-PA.svg",
+      "pontos": 26,
+      "jogos": 31,
+      "vitorias": 5,
+      "variacao": 0,
+      "faixaCor": "#ff0000"
+    },
+    {
+      "ordem": 20,
+      "time": "Chapecoense",
+      "sigla": "CHA",
+      "escudo": "https://s.sde.globo.com/media/organizations/2021/06/21/CHAPECOENSE-2018.svg",
+      "pontos": 18,
+      "jogos": 30,
+      "vitorias": 3,
+      "variacao": 0,
+      "faixaCor": "#ff0000"
+    }
+  ]
+}
