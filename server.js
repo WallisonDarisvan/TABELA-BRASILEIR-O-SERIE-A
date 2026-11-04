@@ -12,13 +12,21 @@ const SERIES_CONFIG = {
     codigo: 'a',
     nome: 'Série A',
     url: 'https://ge.globo.com/futebol/brasileirao-serie-a/',
-    cacheFile: path.join(DATA_DIR, 'tabela-serie-a.json')
+    cacheFile: path.join(DATA_DIR, 'tabela-serie-a.json'),
+    campeonatoId: 'd1a37fa4-e948-43a6-ba53-ab24ab3a45b1',
+    faseSlug: 'fase-unica-campeonato-brasileiro-2026',
+    rodadaAtual: 34,
+    totalRodadas: 38
   },
   b: {
     codigo: 'b',
     nome: 'Série B',
     url: 'https://ge.globo.com/futebol/brasileirao-serie-b/',
-    cacheFile: path.join(DATA_DIR, 'tabela-serie-b.json')
+    cacheFile: path.join(DATA_DIR, 'tabela-serie-b.json'),
+    campeonatoId: '009b5a68-dd09-46b8-95b3-293a2d494366',
+    faseSlug: 'brasileiro-serie-b-2026-fase-unica',
+    rodadaAtual: 37,
+    totalRodadas: 38
   }
 };
 
@@ -87,10 +95,16 @@ async function fetchTabelaDoGE(serie = 'a') {
             faixaCor: item.faixa_classificacao_cor || (item.faixa_classificacao && item.faixa_classificacao.cor) || '#888'
           }));
 
+          if (parsed.rodada) {
+            if (parsed.rodada.atual) config.rodadaAtual = parsed.rodada.atual;
+            if (parsed.rodada.ultima) config.totalRodadas = parsed.rodada.ultima;
+          }
+
           const resultado = {
             serie: config.codigo,
             nomeSerie: config.nome,
             origem: config.url,
+            rodada: parsed.rodada || { atual: config.rodadaAtual, ultima: config.totalRodadas },
             atualizadoEm: new Date().toISOString(),
             totalTimes: times.length,
             classificacao: times
@@ -157,6 +171,124 @@ async function getDadosTabela(serie = 'a', forceRefresh = false) {
     }
     throw err;
   }
+}
+
+// Obtém os 10 jogos de uma determinada rodada via API do GE com cache local
+async function fetchJogosDaRodada(serie = 'a', rodada = null) {
+  const codigo = SERIES_CONFIG[serie] ? serie : 'a';
+  const config = SERIES_CONFIG[codigo];
+
+  // Garante que temos a tabela carregada para saber a rodada atual se rodada for nulo
+  if (!config.rodadaAtual) {
+    try {
+      await getDadosTabela(codigo, false);
+    } catch (e) {}
+  }
+
+  const numRodada = rodada ? parseInt(rodada, 10) : (config.rodadaAtual || 34);
+  const cacheJogosFile = path.join(DATA_DIR, `jogos-${codigo}-${numRodada}.json`);
+
+  // Cache de 5 minutos para jogos
+  if (fs.existsSync(cacheJogosFile)) {
+    try {
+      const stats = fs.statSync(cacheJogosFile);
+      if (Date.now() - stats.mtimeMs < 5 * 60 * 1000) {
+        return JSON.parse(fs.readFileSync(cacheJogosFile, 'utf8'));
+      }
+    } catch (e) {}
+  }
+
+  const url = `https://api.globoesporte.globo.com/tabela/${config.campeonatoId}/fase/${config.faseSlug}/rodada/${numRodada}/jogos/`;
+
+  return new Promise((resolve, reject) => {
+    const req = https.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json'
+      }
+    }, res => {
+      if (res.statusCode !== 200) {
+        // Se falhar e tivermos cache mesmo antigo, retorna ele
+        if (fs.existsSync(cacheJogosFile)) {
+          return resolve(JSON.parse(fs.readFileSync(cacheJogosFile, 'utf8')));
+        }
+        return reject(new Error(`Erro ao buscar jogos da rodada no GE: status ${res.statusCode}`));
+      }
+
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const rawJogos = JSON.parse(data);
+          const lista = Array.isArray(rawJogos) ? rawJogos : [];
+
+          const jogosFormatados = lista.map(j => {
+            const mandante = j.equipes?.mandante || {};
+            const visitante = j.equipes?.visitante || {};
+
+            let statusJogo = 'AGENDADO';
+            if (j.transmissao?.broadcast?.id) {
+              statusJogo = j.transmissao.broadcast.id;
+            } else if (j.jogo_ja_comecou) {
+              statusJogo = 'ENCERRADA';
+            }
+
+            return {
+              id: j.id,
+              dataRealizacao: j.data_realizacao,
+              horaRealizacao: j.hora_realizacao || '',
+              estadio: j.sede?.nome_popular || j.sede?.nome || '',
+              jaComecou: Boolean(j.jogo_ja_comecou),
+              status: statusJogo,
+              statusLabel: j.transmissao?.label || '',
+              mandante: {
+                nome: mandante.nome_popular || mandante.nome || 'Mandante',
+                sigla: mandante.sigla || '',
+                escudo: mandante.escudo || '',
+                placar: j.placar_oficial_mandante
+              },
+              visitante: {
+                nome: visitante.nome_popular || visitante.nome || 'Visitante',
+                sigla: visitante.sigla || '',
+                escudo: visitante.escudo || '',
+                placar: j.placar_oficial_visitante
+              }
+            };
+          });
+
+          const resultado = {
+            serie: codigo,
+            nomeSerie: config.nome,
+            rodada: numRodada,
+            rodadaAtual: config.rodadaAtual || numRodada,
+            totalRodadas: config.totalRodadas || 38,
+            totalJogos: jogosFormatados.length,
+            jogos: jogosFormatados
+          };
+
+          fs.writeFileSync(cacheJogosFile, JSON.stringify(resultado, null, 2), 'utf8');
+          resolve(resultado);
+        } catch (err) {
+          reject(err);
+        }
+      });
+    });
+
+    req.on('error', (err) => {
+      if (fs.existsSync(cacheJogosFile)) {
+        return resolve(JSON.parse(fs.readFileSync(cacheJogosFile, 'utf8')));
+      }
+      reject(err);
+    });
+
+    req.setTimeout(12000, () => {
+      req.destroy();
+      if (fs.existsSync(cacheJogosFile)) {
+        return resolve(JSON.parse(fs.readFileSync(cacheJogosFile, 'utf8')));
+      }
+      reject(new Error('Timeout ao buscar jogos no GE'));
+    });
+  });
 }
 
 // Transmite novos dados para todos os clientes conectados via Server-Sent Events
@@ -275,6 +407,21 @@ const server = http.createServer(async (req, res) => {
     } catch (err) {
       res.writeHead(500, { 'Content-Type': 'application/json; charset=UTF-8' });
       res.end(JSON.stringify({ erro: 'Não foi possível obter a tabela do GE', detalhe: err.message }));
+    }
+    return;
+  }
+
+  // Endpoint REST de Jogos da Rodada
+  if (reqUrl.pathname === '/api/jogos') {
+    const serie = (reqUrl.searchParams.get('serie') || 'a').toLowerCase();
+    const rodada = reqUrl.searchParams.get('rodada');
+    try {
+      const dadosJogos = await fetchJogosDaRodada(serie, rodada);
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' });
+      res.end(JSON.stringify(dadosJogos));
+    } catch (err) {
+      res.writeHead(500, { 'Content-Type': 'application/json; charset=UTF-8' });
+      res.end(JSON.stringify({ erro: 'Não foi possível obter os jogos da rodada', detalhe: err.message }));
     }
     return;
   }

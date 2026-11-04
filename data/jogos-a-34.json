@@ -1,0 +1,220 @@
+{
+  "serie": "a",
+  "nomeSerie": "Série A",
+  "rodada": 34,
+  "rodadaAtual": 34,
+  "totalRodadas": 38,
+  "totalJogos": 10,
+  "jogos": [
+    {
+      "id": 346395,
+      "dataRealizacao": "2026-11-02T20:00",
+      "horaRealizacao": "20:00",
+      "estadio": "Cícero de Souza Marques",
+      "jaComecou": true,
+      "status": "ENCERRADA",
+      "statusLabel": "saiba como foi",
+      "mandante": {
+        "nome": "Bragantino",
+        "sigla": "RBB",
+        "escudo": "https://s.sde.globo.com/media/organizations/2021/06/28/bragantino.svg",
+        "placar": 2
+      },
+      "visitante": {
+        "nome": "Santos",
+        "sigla": "SAN",
+        "escudo": "https://s.sde.globo.com/media/organizations/2018/03/12/santos.svg",
+        "placar": 1
+      }
+    },
+    {
+      "id": 346400,
+      "dataRealizacao": "2026-11-03T19:30",
+      "horaRealizacao": "19:30",
+      "estadio": "Arena Condá",
+      "jaComecou": true,
+      "status": "ENCERRADA",
+      "statusLabel": "saiba como foi",
+      "mandante": {
+        "nome": "Chapecoense",
+        "sigla": "CHA",
+        "escudo": "https://s.sde.globo.com/media/organizations/2021/06/21/CHAPECOENSE-2018.svg",
+        "placar": 1
+      },
+      "visitante": {
+        "nome": "Mirassol",
+        "sigla": "MIR",
+        "escudo": "https://s.sde.globo.com/media/organizations/2026/07/17/MIrassol.svg",
+        "placar": 2
+      }
+    },
+    {
+      "id": 346397,
+      "dataRealizacao": "2026-11-03T21:30",
+      "horaRealizacao": "21:30",
+      "estadio": "Beira-Rio",
+      "jaComecou": true,
+      "status": "ENCERRADA",
+      "statusLabel": "saiba como foi",
+      "mandante": {
+        "nome": "Internacional",
+        "sigla": "INT",
+        "escudo": "https://s.sde.globo.com/media/organizations/2018/03/11/internacional.svg",
+        "placar": 1
+      },
+      "visitante": {
+        "nome": "Coritiba",
+        "sigla": "CFC",
+        "escudo": "https://s.sde.globo.com/media/organizations/2018/03/11/coritiba.svg",
+        "placar": 0
+      }
+    },
+    {
+      "id": 346391,
+      "dataRealizacao": "2026-11-04T19:30",
+      "horaRealizacao": "19:30",
+      "estadio": "Maracanã",
+      "jaComecou": false,
+      "status": "PRE_DIA",
+      "statusLabel": "fique por dentro",
+      "mandante": {
+        "nome": "Flamengo",
+        "sigla": "FLA",
+        "escudo": "https://s.sde.globo.com/media/organizations/2018/04/10/Flamengo-2018.svg",
+        "placar": null
+      },
+      "visitante": {
+        "nome": "Grêmio",
+        "sigla": "GRE",
+        "escudo": "https://s.sde.globo.com/media/organizations/2018/03/12/gremio.svg",
+        "placar": null
+      }
+    },
+    {
+      "id": 346398,
+      "dataRealizacao": "2026-11-04T19:30",
+      "horaRealizacao": "19:30",
+      "estadio": "Arena da Baixada",
+      "jaComecou": false,
+      "status": "PRE_DIA",
+      "statusLabel": "fique por dentro",
+      "mandante": {
+        "nome": "Athletico-PR",
+        "sigla": "CAP",
+        "escudo": "https://s.sde.globo.com/media/organizations/2026/01/07/Athletico-PR.svg",
+        "placar": null
+      },
+      "visitante": {
+        "nome": "Vasco",
+        "sigla": "VAS",
+        "escudo": "https://s.sde.globo.com/media/organizations/2021/09/04/vasco_SVG.svg",
+        "placar": null
+      }
+    },
+    {
+      "id": 346392,
+      "dataRealizacao": "2026-11-04T21:30",
+      "horaRealizacao": "21:30",
+      "estadio": "Nilton Santos (Engenhão)",
+      "jaComecou": false,
+      "status": "PRE_DIA",
+      "statusLabel": "fique por dentro",
+      "mandante": {
+        "nome": "Botafogo",
+        "sigla": "BOT",
+        "escudo": "https://s.sde.globo.com/media/organizations/2019/02/04/botafogo-svg.svg",
+        "placar": null
+      },
+      "visitante": {
+        "nome": "Atlético-MG",
+        "sigla": "CAM",
+        "escudo": "https://s.sde.globo.com/media/organizations/2018/03/10/atletico-mg.svg",
+        "placar": null
+      }
+    },
+    {
+      "id": 346393,
+      "dataRealizacao": "2026-11-04T21:30",
+      "horaRealizacao": "21:30",
+      "estadio": "Vila Belmiro",
+      "jaComecou": false,
+      "status": "PRE_DIA",
+      "statusLabel": "fique por dentro",
+      "mandante": {
+        "nome": "São Paulo",
+        "sigla": "SAO",
+        "escudo": "https://s.sde.globo.com/media/organizations/2018/03/11/sao-paulo.svg",
+        "placar": null
+      },
+      "visitante": {
+        "nome": "Corinthians",
+        "sigla": "COR",
+        "escudo": "https://s.sde.globo.com/media/organizations/2024/10/09/Corinthians_2024_Q4ahot4.svg",
+        "placar": null
+      }
+    },
+    {
+      "id": 346394,
+      "dataRealizacao": "2026-11-05T19:30",
+      "horaRealizacao": "19:30",
+      "estadio": "Nubank Parque",
+      "jaComecou": false,
+      "status": "PRE_DIA",
+      "statusLabel": "fique por dentro",
+      "mandante": {
+        "nome": "Palmeiras",
+        "sigla": "PAL",
+        "escudo": "https://s.sde.globo.com/media/organizations/2019/07/06/Palmeiras.svg",
+        "placar": null
+      },
+      "visitante": {
+        "nome": "Remo",
+        "sigla": "REM",
+        "escudo": "https://s.sde.globo.com/media/organizations/2021/02/25/Remo-PA.svg",
+        "placar": null
+      }
+    },
+    {
+      "id": 346396,
+      "dataRealizacao": "2026-11-05T21:30",
+      "horaRealizacao": "21:30",
+      "estadio": "Mineirão",
+      "jaComecou": false,
+      "status": "PRE_DIA",
+      "statusLabel": "fique por dentro",
+      "mandante": {
+        "nome": "Cruzeiro",
+        "sigla": "CRU",
+        "escudo": "https://s.sde.globo.com/media/organizations/2021/02/13/cruzeiro_2021.svg",
+        "placar": null
+      },
+      "visitante": {
+        "nome": "Bahia",
+        "sigla": "BAH",
+        "escudo": "https://s.sde.globo.com/media/organizations/2018/03/11/bahia.svg",
+        "placar": null
+      }
+    },
+    {
+      "id": 346399,
+      "dataRealizacao": "2026-11-06T20:00",
+      "horaRealizacao": "20:00",
+      "estadio": "Barradão",
+      "jaComecou": false,
+      "status": "PRE_DIA",
+      "statusLabel": "fique por dentro",
+      "mandante": {
+        "nome": "Vitória",
+        "sigla": "VIT",
+        "escudo": "https://s.sde.globo.com/media/organizations/2025/12/18/Vitoria_2025.svg",
+        "placar": null
+      },
+      "visitante": {
+        "nome": "Fluminense",
+        "sigla": "FLU",
+        "escudo": "https://s.sde.globo.com/media/organizations/2018/03/11/fluminense.svg",
+        "placar": null
+      }
+    }
+  ]
+}

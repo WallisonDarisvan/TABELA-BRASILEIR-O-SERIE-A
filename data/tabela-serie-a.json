@@ -2,7 +2,11 @@
   "serie": "a",
   "nomeSerie": "Série A",
   "origem": "https://ge.globo.com/futebol/brasileirao-serie-a/",
-  "atualizadoEm": "2026-11-04T20:44:39.910Z",
+  "rodada": {
+    "atual": 34,
+    "ultima": 38
+  },
+  "atualizadoEm": "2026-11-04T20:58:35.941Z",
   "totalTimes": 20,
   "classificacao": [
     {

@@ -21,6 +21,7 @@ const elements = {
   tabelaCorpo: document.getElementById('tabelaCorpo'),
   btnOpenSeriesModal: document.getElementById('btnOpenSeriesModal'),
   currentSeriesLabel: document.getElementById('currentSeriesLabel'),
+  btnIrParaJogos: document.getElementById('btnIrParaJogos'),
 
   // Modal de seleção de série
   seriesModal: document.getElementById('seriesModal'),
@@ -35,6 +36,26 @@ const elements = {
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
+  // Verifica se veio série pela URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const paramSerie = urlParams.get('serie');
+  if (paramSerie && (paramSerie.toLowerCase() === 'b' || paramSerie.toLowerCase() === 'a')) {
+    state.serie = paramSerie.toLowerCase();
+  }
+
+  const nomeExibicao = state.serie === 'b' ? 'Série B' : 'Série A';
+  if (elements.currentSeriesLabel) elements.currentSeriesLabel.textContent = nomeExibicao;
+  if (elements.btnIrParaJogos) elements.btnIrParaJogos.href = `jogos.html?serie=${state.serie}`;
+  document.title = `Tabela Brasileirão ${nomeExibicao} | Classificação Interativa`;
+
+  elements.seriesOptions.forEach(btn => {
+    if (btn.dataset.serie === state.serie) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
   setupEventListeners();
   setupSSE();
   // Carrega imediatamente enquanto o SSE conecta
@@ -126,6 +147,9 @@ async function trocarSerie(novaSerie) {
 
   // Atualiza título da página
   document.title = `Tabela Brasileirão ${nomeExibicao} | Classificação Interativa`;
+  if (elements.btnIrParaJogos) {
+    elements.btnIrParaJogos.href = `jogos.html?serie=${novaSerie}`;
+  }
 
   // Atualiza botões ativos no modal
   elements.seriesOptions.forEach(btn => {

@@ -2,7 +2,11 @@
   "serie": "b",
   "nomeSerie": "Série B",
   "origem": "https://ge.globo.com/futebol/brasileirao-serie-b/",
-  "atualizadoEm": "2026-11-04T20:44:40.088Z",
+  "rodada": {
+    "atual": 37,
+    "ultima": 38
+  },
+  "atualizadoEm": "2026-11-04T20:58:36.121Z",
   "totalTimes": 20,
   "classificacao": [
     {
