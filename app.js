@@ -77,16 +77,19 @@ function alternarTela(tela, sync = true) {
   const viewTabela = document.getElementById('viewTabela');
   const viewJogos = document.getElementById('viewJogos');
   const navViewText = document.getElementById('navViewText');
+  const headerRoundNav = document.getElementById('headerRoundNav');
 
   if (tela === 'jogos') {
     if (viewTabela) viewTabela.style.display = 'none';
     if (viewJogos) viewJogos.style.display = 'flex';
+    if (headerRoundNav) headerRoundNav.style.display = 'flex';
     if (navViewText) navViewText.textContent = 'TABELA';
     if (typeof window.carregarJogos === 'function') {
       window.carregarJogos();
     }
   } else {
     if (viewJogos) viewJogos.style.display = 'none';
+    if (headerRoundNav) headerRoundNav.style.display = 'none';
     if (viewTabela) viewTabela.style.display = 'block';
     if (navViewText) navViewText.textContent = 'JOGOS';
   }
