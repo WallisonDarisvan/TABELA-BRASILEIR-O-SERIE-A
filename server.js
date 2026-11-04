@@ -589,6 +589,7 @@ const server = http.createServer(async (req, res) => {
         res.end(`Erro no servidor: ${err.code}`);
       }
     } else {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.writeHead(200, { 'Content-Type': contentType });
       res.end(content);
     }

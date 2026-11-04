@@ -46,18 +46,19 @@ const SYNC = {
       overlay = document.createElement('div');
       overlay.id = 'pinModalOverlay';
       overlay.className = 'pin-modal-overlay';
+      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:9999999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif;';
       overlay.innerHTML = `
-        <div class="pin-modal-card" id="pinModalCard">
-          <div class="pin-icon-wrapper">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <div class="pin-modal-card" id="pinModalCard" style="background:#ffffff;border-radius:18px;padding:36px 28px;width:100%;max-width:390px;text-align:center;box-shadow:0 25px 60px rgba(0,0,0,0.35);border:1px solid #e2e8f0;box-sizing:border-box;">
+          <div class="pin-icon-wrapper" style="width:58px;height:58px;border-radius:50%;background:#ecfdf5;color:#00a854;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 4px 14px rgba(0,168,84,0.2);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00a854" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:28px;height:28px;max-width:28px;max-height:28px;display:block;">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
             </svg>
           </div>
-          <h2 class="pin-modal-title">Acesso Bloqueado</h2>
-          <p class="pin-modal-desc">Digite o PIN para liberar a exibição e o controle de todas as telas.</p>
+          <h2 class="pin-modal-title" style="font-size:1.45rem;font-weight:800;color:#0f172a;margin:0 0 8px;">Acesso Bloqueado</h2>
+          <p class="pin-modal-desc" style="font-size:0.92rem;color:#64748b;margin:0 0 20px;line-height:1.4;">Digite o PIN para liberar a exibição e o controle de todas as telas.</p>
           
-          <form class="pin-form" id="pinForm">
+          <form class="pin-form" id="pinForm" style="display:flex;flex-direction:column;gap:12px;">
             <input 
               type="password" 
               class="pin-input-field" 
@@ -68,9 +69,10 @@ const SYNC = {
               autocomplete="off" 
               autofocus 
               required
+              style="width:100%;font-size:1.8rem;letter-spacing:0.35em;text-align:center;padding:12px 14px;border:2px solid #cbd5e1;border-radius:10px;outline:none;background:#f8fafc;box-sizing:border-box;color:#0f172a;"
             />
-            <div class="pin-error-msg" id="pinErrorMsg"></div>
-            <button type="submit" class="pin-submit-btn" id="pinSubmitBtn">
+            <div class="pin-error-msg" id="pinErrorMsg" style="color:#ef4444;font-size:0.88rem;font-weight:600;min-height:20px;"></div>
+            <button type="submit" class="pin-submit-btn" id="pinSubmitBtn" style="width:100%;padding:14px;background:#00a854;color:#ffffff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;box-sizing:border-box;box-shadow:0 4px 14px rgba(0,168,84,0.3);">
               <span>Liberar Acesso</span>
             </button>
           </form>

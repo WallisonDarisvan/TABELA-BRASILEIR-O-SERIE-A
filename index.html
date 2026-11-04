@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2.5">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300b04f'><circle cx='12' cy='12' r='10'/><path d='M12 4a8 8 0 0 1 8 8c0 2.2-.9 4.2-2.3 5.7L12 12V4z' fill='%23ffffff'/></svg>">
 </head>
 <body>
@@ -25,23 +25,25 @@
     <header class="app-header">
       <div class="header-main">
         <div class="header-title-container">
-          <h1 class="main-title">
-            <span class="title-gradient">Brasileirão</span>
-            <button type="button" class="title-highlight series-selector-btn" id="btnOpenSeriesModal" title="Clique para escolher a Série (A ou B)">
-              <span id="currentSeriesLabel">Série A</span>
-              <svg class="series-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </button>
-            <a href="jogos.html?serie=a" class="header-nav-btn" id="btnIrParaJogos" title="Ver Jogos da Rodada">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <div class="header-brand-wrap" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <h1 class="main-title">
+              <span class="title-gradient">Brasileirão</span>
+              <button type="button" class="title-highlight series-selector-btn" id="btnOpenSeriesModal" title="Clique para escolher a Série (A ou B)">
+                <span id="currentSeriesLabel">Série A</span>
+                <svg class="series-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;vertical-align:middle;">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+            </h1>
+            <a href="jogos.html?serie=a" class="header-nav-btn" id="btnIrParaJogos" title="Ver Jogos da Rodada" style="display:inline-flex;align-items:center;gap:6px;background:#ffffff;color:#008744;border:1.5px solid #00a854;padding:7px 16px;border-radius:9999px;font-family:inherit;font-size:0.88rem;font-weight:700;text-decoration:none;letter-spacing:0.04em;box-shadow:0 2px 8px rgba(0,168,84,0.15);white-space:nowrap;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;">
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
                 <path d="M2 12h20"></path>
               </svg>
               <span>JOGOS</span>
             </a>
-          </h1>
+          </div>
           <img src="NC%20SPORTS%20LOGO.png" alt="NC Sports Logo" class="header-nc-logo" onerror="this.src='nc-sports-logo.png'">
         </div>
       </div>

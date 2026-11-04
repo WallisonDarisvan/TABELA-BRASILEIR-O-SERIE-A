@@ -196,37 +196,37 @@ body {
 
 /* Botão de Navegação entre Telas (JOGOS / TABELA) */
 .header-nav-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #ffffff;
-  color: var(--accent-green-deep);
-  border: 1.5px solid var(--accent-green);
-  padding: 6px 14px;
-  border-radius: 9999px;
-  font-family: var(--font-heading);
-  font-size: 0.88rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  vertical-align: middle;
-  margin-left: 8px;
-  box-shadow: 0 2px 8px rgba(0, 168, 84, 0.12);
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: #ffffff !important;
+  color: var(--accent-green-deep) !important;
+  border: 1.5px solid var(--accent-green) !important;
+  padding: 6px 16px !important;
+  border-radius: 9999px !important;
+  font-family: var(--font-heading) !important;
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  vertical-align: middle !important;
+  box-shadow: 0 2px 8px rgba(0, 168, 84, 0.15) !important;
+  line-height: normal !important;
 }
 
 .header-nav-btn:hover {
-  background: var(--accent-green);
-  color: #ffffff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(0, 168, 84, 0.25);
+  background: var(--accent-green) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px rgba(0, 168, 84, 0.25) !important;
 }
 
 .header-nav-btn svg {
-  width: 15px;
-  height: 15px;
-  flex-shrink: 0;
+  width: 15px !important;
+  height: 15px !important;
+  flex-shrink: 0 !important;
 }
 
 .header-nc-logo {
