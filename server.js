@@ -314,7 +314,11 @@ async function fetchJogosDaRodada(serie = 'a', rodada = null) {
             jogos: jogosFormatados
           };
 
-          fs.writeFileSync(cacheJogosFile, JSON.stringify(resultado, null, 2), 'utf8');
+          try {
+            fs.writeFileSync(cacheJogosFile, JSON.stringify(resultado, null, 2), 'utf8');
+          } catch (writeErr) {
+            console.warn('Aviso: Não foi possível gravar cache de jogos no disco:', writeErr.message);
+          }
           resolve(resultado);
         } catch (err) {
           reject(err);

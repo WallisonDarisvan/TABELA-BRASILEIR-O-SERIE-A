@@ -16,6 +16,7 @@ const state = {
   ultimaAtualizacao: null,
   sseConectado: false
 };
+window.state = state;
 
 // Elementos do DOM
 const elements = {
@@ -38,9 +39,8 @@ const elements = {
   btnCloseCompare: document.getElementById('btnCloseCompare')
 };
 
-// Inicialização
-document.addEventListener('DOMContentLoaded', () => {
-  // Verifica se veio série pela URL
+// Inicialização segura
+function inicializarApp() {
   const urlParams = new URLSearchParams(window.location.search);
   const paramSerie = urlParams.get('serie');
   if (paramSerie && (paramSerie.toLowerCase() === 'b' || paramSerie.toLowerCase() === 'a')) {
@@ -48,10 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const nomeExibicao = state.serie === 'b' ? 'Série B' : 'Série A';
-  if (elements.currentSeriesLabel) elements.currentSeriesLabel.textContent = nomeExibicao;
+  const labelEl = document.getElementById('currentSeriesLabel');
+  if (labelEl) labelEl.textContent = nomeExibicao;
   document.title = `Tabela Brasileirão ${nomeExibicao} | Classificação Interativa`;
 
-  elements.seriesOptions.forEach(btn => {
+  document.querySelectorAll('.series-card-option').forEach(btn => {
     if (btn.dataset.serie === state.serie) {
       btn.classList.add('active');
     } else {
@@ -67,9 +68,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
   setupEventListeners();
   setupSSE();
-  // Carrega imediatamente enquanto o SSE conecta
   carregarDados();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', inicializarApp);
+} else {
+  inicializarApp();
+}
+
+// Funções expostas globalmente para máxima robustez
+window.alternarTelaView = function() {
+  const proximaTela = (state.tela === 'jogos') ? 'tabela' : 'jogos';
+  alternarTela(proximaTela, true);
+};
+
+window.abrirModalSeries = function() {
+  const modal = document.getElementById('seriesModal');
+  if (modal) modal.style.display = 'flex';
+};
+
+window.fecharModalSeries = function() {
+  const modal = document.getElementById('seriesModal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.selecionarSerie = function(novaSerie) {
+  window.fecharModalSeries();
+  if (novaSerie && novaSerie !== state.serie) {
+    trocarSerie(novaSerie, true);
+  }
+};
+
+window.fecharModalComparacao = function() {
+  const modal = document.getElementById('compareModal');
+  if (modal) modal.style.display = 'none';
+  state.timeSelecionadoParaComparar = null;
+};
 
 // Alterna instantaneamente entre a visão de Tabela e a visão de Jogos
 function alternarTela(tela, sync = true) {
@@ -80,21 +115,21 @@ function alternarTela(tela, sync = true) {
   const headerRoundNav = document.getElementById('headerRoundNav');
 
   if (tela === 'jogos') {
-    if (viewTabela) viewTabela.style.display = 'none';
-    if (viewJogos) viewJogos.style.display = 'flex';
-    if (headerRoundNav) headerRoundNav.style.display = 'flex';
+    if (viewTabela) viewTabela.style.setProperty('display', 'none', 'important');
+    if (viewJogos) viewJogos.style.setProperty('display', 'flex', 'important');
+    if (headerRoundNav) headerRoundNav.style.setProperty('display', 'flex', 'important');
     if (navViewText) navViewText.textContent = 'TABELA';
     if (typeof window.carregarJogos === 'function') {
       window.carregarJogos();
     }
   } else {
-    if (viewJogos) viewJogos.style.display = 'none';
-    if (headerRoundNav) headerRoundNav.style.display = 'none';
-    if (viewTabela) viewTabela.style.display = 'block';
+    if (viewJogos) viewJogos.style.setProperty('display', 'none', 'important');
+    if (headerRoundNav) headerRoundNav.style.setProperty('display', 'none', 'important');
+    if (viewTabela) viewTabela.style.setProperty('display', 'block', 'important');
     if (navViewText) navViewText.textContent = 'JOGOS';
   }
 
-  if (sync && typeof SYNC !== 'undefined') {
+  if (sync && typeof SYNC !== 'undefined' && SYNC.send) {
     SYNC.send({ tela, serie: state.serie });
   }
 }
@@ -102,38 +137,25 @@ window.alternarTela = alternarTela;
 
 // Configura os ouvintes de eventos da UI
 function setupEventListeners() {
-  // Clique no botão de alternar visão (TABELA ↔ JOGOS)
-  if (elements.btnToggleView) {
-    elements.btnToggleView.addEventListener('click', () => {
-      const proximaTela = state.tela === 'jogos' ? 'tabela' : 'jogos';
-      alternarTela(proximaTela, true);
-    });
-  }
-
-  // Modal de troca de Série
-  if (elements.btnOpenSeriesModal) {
-    elements.btnOpenSeriesModal.addEventListener('click', abrirModalSeries);
-  }
-
-  if (elements.btnCloseSeriesModal) {
-    elements.btnCloseSeriesModal.addEventListener('click', fecharModalSeries);
-  }
-
-  if (elements.seriesModal) {
-    elements.seriesModal.addEventListener('click', (e) => {
-      if (e.target === elements.seriesModal) fecharModalSeries();
-    });
-  }
-
-  // Clique nas opções de Série (Série A / Série B)
-  elements.seriesOptions.forEach(btn => {
-    btn.addEventListener('click', () => {
+  // Delegação global de cliques para blindagem total em qualquer navegador/dispositivo
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#btnToggleView')) {
+      e.preventDefault();
+      window.alternarTelaView();
+    } else if (e.target.closest('#btnOpenSeriesModal')) {
+      e.preventDefault();
+      window.abrirModalSeries();
+    } else if (e.target.closest('#btnCloseSeriesModal')) {
+      e.preventDefault();
+      window.fecharModalSeries();
+    } else if (e.target.closest('#btnCloseCompare')) {
+      e.preventDefault();
+      window.fecharModalComparacao();
+    } else if (e.target.closest('.series-card-option')) {
+      const btn = e.target.closest('.series-card-option');
       const novaSerie = btn.dataset.serie;
-      fecharModalSeries();
-      if (novaSerie && novaSerie !== state.serie) {
-        trocarSerie(novaSerie, true);
-      }
-    });
+      window.selecionarSerie(novaSerie);
+    }
   });
 
   // Ordenação nos cabeçalhos da tabela
@@ -144,24 +166,28 @@ function setupEventListeners() {
         state.ordenacao.direcao = state.ordenacao.direcao === 'desc' ? 'asc' : 'desc';
       } else {
         state.ordenacao.coluna = coluna;
-        // Posição e Time por padrão 'asc', Estatísticas (P, J, V) por padrão 'desc'
         state.ordenacao.direcao = (coluna === 'ordem' || coluna === 'time') ? 'asc' : 'desc';
       }
       atualizarIndicadoresOrdenacao();
       renderizarTabela();
 
-      // Sincroniza ordenação instantaneamente com as outras telas (ex: TV)
-      if (typeof SYNC !== 'undefined') {
+      if (typeof SYNC !== 'undefined' && SYNC.send) {
         SYNC.send({ ordenacao: state.ordenacao, tela: 'tabela' });
       }
     });
   });
 
-  // Fechar modal de comparação
-  elements.btnCloseCompare.addEventListener('click', fecharModalComparacao);
-  elements.compareModal.addEventListener('click', (e) => {
-    if (e.target === elements.compareModal) fecharModalComparacao();
-  });
+  if (elements.compareModal) {
+    elements.compareModal.addEventListener('click', (e) => {
+      if (e.target === elements.compareModal) window.fecharModalComparacao();
+    });
+  }
+
+  if (elements.seriesModal) {
+    elements.seriesModal.addEventListener('click', (e) => {
+      if (e.target === elements.seriesModal) window.fecharModalSeries();
+    });
+  }
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {

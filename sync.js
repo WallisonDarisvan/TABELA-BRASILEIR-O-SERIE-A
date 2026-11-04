@@ -192,6 +192,8 @@ const SYNC = {
 };
 
 // Inicia verificação assim que o script carregar
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => SYNC.init());
+} else {
   SYNC.init();
-});
+}

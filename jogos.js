@@ -37,9 +37,8 @@ const gamesElements = {
   seriesOptions: document.querySelectorAll('.series-card-option')
 };
 
-// Inicialização
-document.addEventListener('DOMContentLoaded', () => {
-  // Lê parâmetros da URL
+// Inicialização segura
+function inicializarJogos() {
   const urlParams = new URLSearchParams(window.location.search);
   const paramSerie = urlParams.get('serie');
   if (paramSerie && (paramSerie.toLowerCase() === 'b' || paramSerie.toLowerCase() === 'a')) {
@@ -52,37 +51,54 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   setupGamesEventListeners();
-  carregarJogos();
-});
+  if (window.state && window.state.tela === 'jogos') {
+    carregarJogos();
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', inicializarJogos);
+} else {
+  inicializarJogos();
+}
+
+// Navegação de rodadas por delta (-1 ou +1)
+function mudarRodadaDelta(delta) {
+  const atual = gamesState.rodada || gamesState.rodadaAtual || 34;
+  const nova = atual + delta;
+  if (nova >= 1 && nova <= (gamesState.totalRodadas || 38)) {
+    mudarRodada(nova, true);
+  }
+}
+window.mudarRodadaDelta = mudarRodadaDelta;
+window.voltarRodada = () => mudarRodadaDelta(-1);
+window.avancarRodada = () => mudarRodadaDelta(1);
 
 // Configura os ouvintes de eventos da página de jogos
 function setupGamesEventListeners() {
-  // Navegação de Rodada
-  if (gamesElements.btnPrevRound) {
-    gamesElements.btnPrevRound.addEventListener('click', () => {
-      if (gamesState.rodada > 1 && !gamesState.carregando) {
-        mudarRodada(gamesState.rodada - 1, true);
-      }
-    });
+  const btnPrev = document.getElementById('btnPrevRound');
+  const btnNext = document.getElementById('btnNextRound');
+
+  if (btnPrev) {
+    btnPrev.onclick = (e) => {
+      e.preventDefault();
+      mudarRodadaDelta(-1);
+    };
   }
 
-  if (gamesElements.btnNextRound) {
-    gamesElements.btnNextRound.addEventListener('click', () => {
-      if (gamesState.rodada < gamesState.totalRodadas && !gamesState.carregando) {
-        mudarRodada(gamesState.rodada + 1, true);
-      }
-    });
+  if (btnNext) {
+    btnNext.onclick = (e) => {
+      e.preventDefault();
+      mudarRodadaDelta(1);
+    };
   }
 
   document.addEventListener('keydown', (e) => {
+    if (window.state && window.state.tela !== 'jogos') return;
     if (e.key === 'ArrowLeft') {
-      if (gamesState.rodada > 1 && !gamesState.carregando) {
-        mudarRodada(gamesState.rodada - 1, true);
-      }
+      mudarRodadaDelta(-1);
     } else if (e.key === 'ArrowRight') {
-      if (gamesState.rodada < gamesState.totalRodadas && !gamesState.carregando) {
-        mudarRodada(gamesState.rodada + 1, true);
-      }
+      mudarRodadaDelta(1);
     }
   });
 }
@@ -177,11 +193,16 @@ window.trocarSerieJogos = trocarSerieJogos;
 
 // Atualiza o estado dos botões de avançar/voltar rodada
 function atualizarBotoesNavegacao() {
-  if (gamesElements.btnPrevRound) {
-    gamesElements.btnPrevRound.disabled = gamesState.carregando || (gamesState.rodada <= 1);
+  const rodada = gamesState.rodada || gamesState.rodadaAtual || 34;
+  const total = gamesState.totalRodadas || 38;
+  const btnPrev = document.getElementById('btnPrevRound');
+  const btnNext = document.getElementById('btnNextRound');
+
+  if (btnPrev) {
+    btnPrev.disabled = (rodada <= 1);
   }
-  if (gamesElements.btnNextRound) {
-    gamesElements.btnNextRound.disabled = gamesState.carregando || (gamesState.rodada >= gamesState.totalRodadas);
+  if (btnNext) {
+    btnNext.disabled = (rodada >= total);
   }
 }
 
