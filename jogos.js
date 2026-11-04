@@ -63,7 +63,12 @@ if (document.readyState === 'loading') {
 }
 
 // Navegação de rodadas por delta (-1 ou +1)
+let isNavigatingRound = false;
 function mudarRodadaDelta(delta) {
+  if (isNavigatingRound) return;
+  isNavigatingRound = true;
+  setTimeout(() => { isNavigatingRound = false; }, 250);
+
   const atual = gamesState.rodada || gamesState.rodadaAtual || 34;
   const nova = atual + delta;
   if (nova >= 1 && nova <= (gamesState.totalRodadas || 38)) {

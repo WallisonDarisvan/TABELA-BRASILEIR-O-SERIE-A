@@ -78,7 +78,12 @@ if (document.readyState === 'loading') {
 }
 
 // Funções expostas globalmente para máxima robustez
+let isTogglingView = false;
 window.alternarTelaView = function() {
+  if (isTogglingView) return;
+  isTogglingView = true;
+  setTimeout(() => { isTogglingView = false; }, 300);
+
   const proximaTela = (state.tela === 'jogos') ? 'tabela' : 'jogos';
   alternarTela(proximaTela, true);
 };
