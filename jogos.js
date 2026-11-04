@@ -63,10 +63,13 @@ function setupGamesEventListeners() {
   if (gamesElements.btnVoltarTabela) {
     gamesElements.btnVoltarTabela.addEventListener('click', (e) => {
       e.preventDefault();
+      const destino = gamesElements.btnVoltarTabela.href;
       if (typeof SYNC !== 'undefined') {
         SYNC.send({ tela: 'tabela', serie: gamesState.serie });
       }
-      window.location.href = gamesElements.btnVoltarTabela.href;
+      setTimeout(() => {
+        window.location.href = destino;
+      }, 40);
     });
   }
 

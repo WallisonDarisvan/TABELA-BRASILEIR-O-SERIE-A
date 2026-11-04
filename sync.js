@@ -148,17 +148,30 @@ const SYNC = {
 
   // Envia atualização de estado para o servidor replicar para todas as telas
   send(partialState) {
+    const payload = JSON.stringify({
+      clientId: this.clientId,
+      state: partialState
+    });
+
     try {
+      if (navigator.sendBeacon) {
+        const blob = new Blob([payload], { type: 'application/json' });
+        navigator.sendBeacon('/api/sync', blob);
+      } else {
+        fetch('/api/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload,
+          keepalive: true
+        }).catch(() => {});
+      }
+    } catch (e) {
       fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          clientId: this.clientId,
-          state: partialState
-        })
-      }).catch(err => console.warn('Falha ao sincronizar ação:', err));
-    } catch (e) {
-      console.warn('Erro na requisição de sincronização:', e);
+        body: payload,
+        keepalive: true
+      }).catch(() => {});
     }
   },
 
@@ -174,19 +187,23 @@ const SYNC = {
     const pathname = window.location.pathname.toLowerCase();
     const isJogosPage = pathname.includes('jogos.html');
 
-    // Troca de tela global (Tabela ↔ Jogos)
-    if (data.tela === 'jogos' && !isJogosPage) {
-      const queryRodada = data.rodada ? `&rodada=${data.rodada}` : '';
-      window.location.href = `jogos.html?serie=${data.serie || 'a'}${queryRodada}`;
-      return;
+    // REDIRECIONAMENTO ENTRE TELAS (Tabela ↔ Jogos):
+    // Apenas deve ocorrer quando houver um comando em tempo real enviado por OUTRO aparelho (senderId presente e diferente)
+    // NUNCA redirecionar no evento inicial da conexão, permitindo que a página que o usuário acabou de abrir carregue normalmente!
+    if (data.senderId && data.senderId !== this.clientId) {
+      if (data.tela === 'jogos' && !isJogosPage) {
+        const queryRodada = data.rodada ? `&rodada=${data.rodada}` : '';
+        window.location.href = `jogos.html?serie=${data.serie || 'a'}${queryRodada}`;
+        return;
+      }
+
+      if (data.tela === 'tabela' && isJogosPage) {
+        window.location.href = `index.html?serie=${data.serie || 'a'}`;
+        return;
+      }
     }
 
-    if (data.tela === 'tabela' && isJogosPage) {
-      window.location.href = `index.html?serie=${data.serie || 'a'}`;
-      return;
-    }
-
-    // Se continuar na mesma página, notifica o listener local registrado
+    // Se continuar na mesma página, notifica o listener local registrado (para troca de série, rodada ou ordenação)
     if (typeof window.onSyncStateReceived === 'function') {
       window.onSyncStateReceived(data);
     }
@@ -196,4 +213,8 @@ const SYNC = {
 // Inicia verificação assim que o script carregar
 document.addEventListener('DOMContentLoaded', () => {
   SYNC.init();
+
+  // Avisa o servidor qual tela acabou de ser carregada
+  const isJogos = window.location.pathname.toLowerCase().includes('jogos.html');
+  SYNC.send({ tela: isJogos ? 'jogos' : 'tabela' });
 });

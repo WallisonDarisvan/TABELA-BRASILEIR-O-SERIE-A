@@ -68,10 +68,13 @@ function setupEventListeners() {
   if (elements.btnIrParaJogos) {
     elements.btnIrParaJogos.addEventListener('click', (e) => {
       e.preventDefault();
+      const destino = elements.btnIrParaJogos.href;
       if (typeof SYNC !== 'undefined') {
         SYNC.send({ tela: 'jogos', serie: state.serie });
       }
-      window.location.href = elements.btnIrParaJogos.href;
+      setTimeout(() => {
+        window.location.href = destino;
+      }, 40);
     });
   }
 
