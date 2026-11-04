@@ -27,7 +27,12 @@
         <div class="header-title-container">
           <h1 class="main-title">
             <span class="title-gradient">Brasileirão</span>
-            <span class="title-highlight">Série A</span>
+            <button type="button" class="title-highlight series-selector-btn" id="btnOpenSeriesModal" title="Clique para escolher a Série (A ou B)">
+              <span id="currentSeriesLabel">Série A</span>
+              <svg class="series-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
           </h1>
           <img src="NC%20SPORTS%20LOGO.png" alt="NC Sports Logo" class="header-nc-logo" onerror="this.src='nc-sports-logo.png'">
         </div>
@@ -99,6 +104,41 @@
         </div>
         <div class="modal-body" id="compareModalBody">
           <!-- Conteúdo da comparação gerado dinamicamente -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Seleção de Série -->
+    <div class="modal-overlay" id="seriesModal" style="display: none;">
+      <div class="modal-box modal-box-sm">
+        <div class="modal-header">
+          <h3>Selecione a Divisão</h3>
+          <button class="btn-close-modal" id="btnCloseSeriesModal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="series-options-list">
+            <button type="button" class="series-card-option active" data-serie="a">
+              <div class="series-card-content">
+                <div class="series-card-badge badge-a">A</div>
+                <div class="series-card-text">
+                  <strong>Brasileirão Série A</strong>
+                  <span>Primeira Divisão</span>
+                </div>
+              </div>
+              <span class="series-check-icon">✓</span>
+            </button>
+
+            <button type="button" class="series-card-option" data-serie="b">
+              <div class="series-card-content">
+                <div class="series-card-badge badge-b">B</div>
+                <div class="series-card-text">
+                  <strong>Brasileirão Série B</strong>
+                  <span>Segunda Divisão</span>
+                </div>
+              </div>
+              <span class="series-check-icon">✓</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

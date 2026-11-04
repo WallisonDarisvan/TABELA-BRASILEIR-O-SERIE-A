@@ -160,6 +160,40 @@ body {
   display: inline-block;
 }
 
+.series-selector-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 10px;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  vertical-align: middle;
+}
+
+.series-selector-btn:hover {
+  background: rgba(0, 168, 84, 0.08);
+  border-color: rgba(0, 168, 84, 0.25);
+}
+
+.series-chevron {
+  width: 22px;
+  height: 22px;
+  color: var(--accent-green);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.series-selector-btn:hover .series-chevron {
+  transform: translateY(2px);
+}
+
 .header-nc-logo {
   height: 62px;
   width: auto;
@@ -538,6 +572,99 @@ body {
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   animation: modalEnter 0.25s ease-out;
+}
+
+.modal-box-sm {
+  max-width: 440px;
+}
+
+.series-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.series-card-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 18px;
+  background: #ffffff;
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.series-card-option:hover {
+  border-color: var(--accent-green);
+  background: #f0fdf4;
+  transform: translateY(-1px);
+}
+
+.series-card-option.active {
+  border-color: var(--accent-green);
+  background: #ecfdf5;
+  box-shadow: 0 4px 14px rgba(0, 168, 84, 0.12);
+}
+
+.series-card-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.series-card-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--accent-green);
+  color: #ffffff;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 168, 84, 0.25);
+}
+
+.series-card-badge.badge-b {
+  background: #0284c7;
+  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
+}
+
+.series-card-text strong {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  font-family: var(--font-heading);
+}
+
+.series-card-text span {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.series-check-icon {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--accent-green);
+  opacity: 0;
+  transform: scale(0.7);
+  transition: all 0.2s ease;
+}
+
+.series-card-option.active .series-check-icon {
+  opacity: 1;
+  transform: scale(1);
 }
 
 @keyframes modalEnter {

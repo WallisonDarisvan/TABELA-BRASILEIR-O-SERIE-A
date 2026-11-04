@@ -5,6 +5,7 @@
 
 // Estado da Aplicação
 const state = {
+  serie: 'a', // 'a' ou 'b'
   times: [],
   ordenacao: {
     coluna: 'pontos',
@@ -18,6 +19,13 @@ const state = {
 // Elementos do DOM
 const elements = {
   tabelaCorpo: document.getElementById('tabelaCorpo'),
+  btnOpenSeriesModal: document.getElementById('btnOpenSeriesModal'),
+  currentSeriesLabel: document.getElementById('currentSeriesLabel'),
+
+  // Modal de seleção de série
+  seriesModal: document.getElementById('seriesModal'),
+  btnCloseSeriesModal: document.getElementById('btnCloseSeriesModal'),
+  seriesOptions: document.querySelectorAll('.series-card-option'),
 
   // Modal de comparação
   compareModal: document.getElementById('compareModal'),
@@ -35,6 +43,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Configura os ouvintes de eventos da UI
 function setupEventListeners() {
+  // Modal de troca de Série
+  if (elements.btnOpenSeriesModal) {
+    elements.btnOpenSeriesModal.addEventListener('click', abrirModalSeries);
+  }
+
+  if (elements.btnCloseSeriesModal) {
+    elements.btnCloseSeriesModal.addEventListener('click', fecharModalSeries);
+  }
+
+  if (elements.seriesModal) {
+    elements.seriesModal.addEventListener('click', (e) => {
+      if (e.target === elements.seriesModal) fecharModalSeries();
+    });
+  }
+
+  // Clique nas opções de Série (Série A / Série B)
+  elements.seriesOptions.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const novaSerie = btn.dataset.serie;
+      fecharModalSeries();
+      if (novaSerie && novaSerie !== state.serie) {
+        trocarSerie(novaSerie);
+      }
+    });
+  });
+
   // Ordenação nos cabeçalhos da tabela
   document.querySelectorAll('th.sortable').forEach(th => {
     th.addEventListener('click', () => {
@@ -58,10 +92,63 @@ function setupEventListeners() {
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && elements.compareModal.style.display !== 'none') {
-      fecharModalComparacao();
+    if (e.key === 'Escape') {
+      if (elements.seriesModal && elements.seriesModal.style.display !== 'none') {
+        fecharModalSeries();
+      } else if (elements.compareModal && elements.compareModal.style.display !== 'none') {
+        fecharModalComparacao();
+      }
     }
   });
+}
+
+function abrirModalSeries() {
+  if (elements.seriesModal) {
+    elements.seriesModal.style.display = 'flex';
+  }
+}
+
+function fecharModalSeries() {
+  if (elements.seriesModal) {
+    elements.seriesModal.style.display = 'none';
+  }
+}
+
+// Troca a série exibida e busca os dados correspondentes
+async function trocarSerie(novaSerie) {
+  state.serie = novaSerie;
+  const nomeExibicao = novaSerie === 'b' ? 'Série B' : 'Série A';
+
+  // Atualiza rótulo no título
+  if (elements.currentSeriesLabel) {
+    elements.currentSeriesLabel.textContent = nomeExibicao;
+  }
+
+  // Atualiza título da página
+  document.title = `Tabela Brasileirão ${nomeExibicao} | Classificação Interativa`;
+
+  // Atualiza botões ativos no modal
+  elements.seriesOptions.forEach(btn => {
+    if (btn.dataset.serie === novaSerie) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  // Exibe estado de carregamento
+  elements.tabelaCorpo.innerHTML = `
+    <tr class="loading-row">
+      <td colspan="5">
+        <div class="loading-container">
+          <div class="spinner"></div>
+          <p>Carregando tabela oficial da ${nomeExibicao}...</p>
+        </div>
+      </td>
+    </tr>
+  `;
+
+  await carregarDados();
 }
 
 // Configuração de Server-Sent Events (SSE) para atualização automática em tempo real
@@ -77,8 +164,11 @@ function setupSSE() {
   eventSource.addEventListener('tabela', (event) => {
     try {
       const data = JSON.parse(event.data);
-      console.log('⚡ Evento SSE recebido:', data);
-      aplicarDados(data, true);
+      // Aplica apenas se o evento for da série atualmente visualizada
+      if (!data.serie || data.serie === state.serie) {
+        console.log(`⚡ Evento SSE recebido (${data.nomeSerie || data.serie}):`, data);
+        aplicarDados(data, true);
+      }
     } catch (err) {
       console.error('Erro ao processar dados recebidos via SSE:', err);
     }
@@ -114,14 +204,17 @@ function aplicarDados(data, viaSSE = false) {
   }
 }
 
-// Carrega os dados da API com fallback resiliente
+// Carrega os dados da API com fallback resiliente para a série atual
 async function carregarDados() {
+  const endpoint = `/api/tabela?serie=${state.serie}`;
+  const localFallback = state.serie === 'b' ? './data/tabela-serie-b.json' : './data/tabela.json';
+
   try {
     let response;
     try {
-      response = await fetch('/api/tabela');
+      response = await fetch(endpoint);
     } catch (netErr) {
-      response = await fetch('./data/tabela.json');
+      response = await fetch(localFallback);
     }
 
     if (!response.ok) {
@@ -133,14 +226,15 @@ async function carregarDados() {
   } catch (error) {
     console.error('Erro ao carregar dados:', error);
     try {
-      const localResp = await fetch('./data/tabela.json');
+      const localResp = await fetch(localFallback);
       const localData = await localResp.json();
       aplicarDados(localData, false);
     } catch (e) {
+      const serieNome = state.serie === 'b' ? 'Série B' : 'Série A';
       elements.tabelaCorpo.innerHTML = `
         <tr class="empty-row">
           <td colspan="5">
-            Não foi possível carregar a tabela. Verifique se o servidor está rodando (node server.js).
+            Não foi possível carregar a tabela da ${serieNome}. Verifique se o servidor está rodando.
           </td>
         </tr>
       `;
@@ -167,6 +261,13 @@ function atualizarIndicadoresOrdenacao() {
 
 // Retorna a cor da faixa oficial de acordo com a posição original no campeonato
 function getCorFaixa(ordem) {
+  if (state.serie === 'b') {
+    if (ordem >= 1 && ordem <= 4) return 'var(--zona-libertadores)'; // G-4: Acesso à Série A
+    if (ordem >= 17 && ordem <= 20) return 'var(--zona-rebaixamento)'; // Z-4: Rebaixamento à Série C
+    return 'transparent';
+  }
+
+  // Série A
   if (ordem >= 1 && ordem <= 4) return 'var(--zona-libertadores)';
   if (ordem >= 5 && ordem <= 6) return 'var(--zona-pre-libertadores)';
   if (ordem >= 7 && ordem <= 12) return 'var(--zona-sul-americana)';
