@@ -232,9 +232,9 @@ function renderizarRodadaInfo() {
   }
 }
 
-// Formata a data e hora do confronto
+// Formata a data do confronto
 function formatarDataHora(isoString, horaRealizacao) {
-  if (!isoString && !horaRealizacao) return 'Data a definir';
+  if (!isoString && !horaRealizacao) return '';
 
   try {
     const date = new Date(isoString);
@@ -243,30 +243,31 @@ function formatarDataHora(isoString, horaRealizacao) {
       const diaSemana = diasSemana[date.getDay()];
       const dia = String(date.getDate()).padStart(2, '0');
       const mes = String(date.getMonth() + 1).padStart(2, '0');
-      const hora = horaRealizacao || `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-      return `${diaSemana}, ${dia}/${mes} · ${hora}`;
+      return `${diaSemana}, ${dia}/${mes}`;
     }
   } catch (e) {}
 
-  return horaRealizacao ? `Horário: ${horaRealizacao}` : 'Data a definir';
+  return '';
 }
 
-// Cria o HTML de um Card de Partida
+// Cria o HTML de um Card de Partida (Com tag de status na mesma linha do local para economizar espaço)
 function criarCardJogoHtml(jogo) {
-  const dataHoraFormatada = formatarDataHora(jogo.dataRealizacao, jogo.horaRealizacao);
-  const estadio = jogo.estadio || 'Local a confirmar';
+  const dataFormatada = formatarDataHora(jogo.dataRealizacao, jogo.horaRealizacao);
+  const estadio = jogo.estadio || 'Local a definir';
 
   const placarMandante = (jogo.mandante.placar !== null && jogo.mandante.placar !== undefined) ? jogo.mandante.placar : '';
   const placarVisitante = (jogo.visitante.placar !== null && jogo.visitante.placar !== undefined) ? jogo.visitante.placar : '';
 
-  // Determina etiqueta de status
+  // Determina etiqueta de status (ao vivo, encerrado ou horário)
   let statusHtml = '';
   if (jogo.status === 'AO_VIVO' || jogo.status === 'EM_ANDAMENTO') {
     statusHtml = `<span class="game-status-tag status-live">AO VIVO</span>`;
   } else if (jogo.jaComecou || jogo.status === 'ENCERRADA') {
     statusHtml = `<span class="game-status-tag status-finished">ENCERRADO</span>`;
+  } else if (jogo.horaRealizacao) {
+    statusHtml = `<span class="game-status-tag status-scheduled">${jogo.horaRealizacao}</span>`;
   } else {
-    statusHtml = `<span class="game-status-tag status-scheduled">${jogo.horaRealizacao || 'A CONFIRMAR'}</span>`;
+    statusHtml = `<span class="game-status-tag status-scheduled">A DEFINIR</span>`;
   }
 
   return `
@@ -279,7 +280,10 @@ function criarCardJogoHtml(jogo) {
           </svg>
           <span>${estadio}</span>
         </div>
-        <div class="game-datetime">${dataHoraFormatada}</div>
+        <div class="game-meta-right">
+          ${dataFormatada ? `<span class="game-datetime">${dataFormatada}</span>` : ''}
+          ${statusHtml}
+        </div>
       </div>
 
       <div class="game-teams-clash">
@@ -301,10 +305,6 @@ function criarCardJogoHtml(jogo) {
           <img class="team-club-escudo" src="${jogo.visitante.escudo}" alt="${jogo.visitante.nome}" loading="lazy" onerror="this.style.opacity='0.3'">
           <span class="team-club-name" title="${jogo.visitante.nome}">${jogo.visitante.nome}</span>
         </div>
-      </div>
-
-      <div class="game-card-footer">
-        ${statusHtml}
       </div>
     </div>
   `;
