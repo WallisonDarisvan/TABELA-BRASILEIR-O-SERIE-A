@@ -2,133 +2,14 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogos do Brasileirão Série A | Confrontos da Rodada</title>
-  <meta name="description" content="Lista dos 10 jogos da rodada do Campeonato Brasileiro Série A e Série B com placares e datas em tempo real.">
-  
-  <!-- Fontes do Google -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="style.css?v=2.5">
-  <link rel="stylesheet" href="jogos.css?v=2.5">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300b04f'><circle cx='12' cy='12' r='10'/><path d='M12 4a8 8 0 0 1 8 8c0 2.2-.9 4.2-2.3 5.7L12 12V4z' fill='%23ffffff'/></svg>">
+  <title>Redirecionando para Jogos...</title>
+  <script>
+    // Redireciona instantaneamente para a visão de jogos no index.html sem quebrar histórico
+    const search = window.location.search ? window.location.search + '&view=jogos' : '?view=jogos';
+    window.location.replace('index.html' + search);
+  </script>
 </head>
-<body>
-  <div class="app-background">
-    <div class="glow glow-1"></div>
-    <div class="glow glow-2"></div>
-  </div>
-
-  <div class="app-container">
-    <!-- Cabeçalho Principal -->
-    <header class="app-header">
-      <div class="header-main">
-        <div class="header-title-container">
-          <div class="header-brand-wrap" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-            <h1 class="main-title">
-              <span class="title-gradient">Brasileirão</span>
-              <button type="button" class="title-highlight series-selector-btn" id="btnOpenSeriesModal" title="Clique para escolher a Série (A ou B)">
-                <span id="currentSeriesLabel">Série A</span>
-                <svg class="series-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;vertical-align:middle;">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </button>
-            </h1>
-            <a href="index.html?serie=a" class="header-nav-btn" id="btnVoltarTabela" title="Voltar para a Classificação" style="display:inline-flex;align-items:center;gap:6px;background:#ffffff;color:#008744;border:1.5px solid #00a854;padding:7px 16px;border-radius:9999px;font-family:inherit;font-size:0.88rem;font-weight:700;text-decoration:none;letter-spacing:0.04em;box-shadow:0 2px 8px rgba(0,168,84,0.15);white-space:nowrap;">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;">
-                <path d="M3 3h18v18H3z"></path>
-                <path d="M3 9h18"></path>
-                <path d="M3 15h18"></path>
-                <path d="M9 3v18"></path>
-              </svg>
-              <span>TABELA</span>
-            </a>
-          </div>
-          <img src="NC%20SPORTS%20LOGO.png" alt="NC Sports Logo" class="header-nc-logo" onerror="this.src='nc-sports-logo.png'">
-        </div>
-      </div>
-    </header>
-
-    <!-- Navegador de Rodadas (Avançar / Voltar) -->
-    <section class="round-navigator-card">
-      <button type="button" class="round-nav-btn" id="btnPrevRound" title="Ver rodada anterior (Seta Esquerda)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
-        <span>Anterior</span>
-      </button>
-
-      <div class="round-current-info">
-        <div class="round-current-title">
-          <span id="roundTitleText">CARREGANDO...</span>
-          <span class="round-current-badge" id="roundBadgeCurrent" style="display: none;">RODADA ATUAL</span>
-        </div>
-        <div class="round-subtitle" id="roundSubtitle">Campeonato Brasileiro · Rodada Oficial</div>
-      </div>
-
-      <button type="button" class="round-nav-btn" id="btnNextRound" title="Ver próxima rodada (Seta Direita)">
-        <span>Próxima</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="9 18 15 12 9 6"></polyline>
-        </svg>
-      </button>
-    </section>
-
-    <!-- Área Rolável com as Duas Colunas de Jogos (5 em cada) -->
-    <main class="games-scroll-area" id="gamesContainer">
-      <div class="games-two-columns">
-        <!-- Coluna Esquerda: 5 Jogos -->
-        <div class="games-column" id="gamesColLeft">
-          <!-- Gerado dinamicamente pelo jogos.js -->
-        </div>
-
-        <!-- Coluna Direita: 5 Jogos -->
-        <div class="games-column" id="gamesColRight">
-          <!-- Gerado dinamicamente pelo jogos.js -->
-        </div>
-      </div>
-    </main>
-
-    <!-- Modal de Seleção de Série -->
-    <div class="modal-overlay" id="seriesModal" style="display: none;">
-      <div class="modal-box modal-box-sm">
-        <div class="modal-header">
-          <h3>Selecione a Divisão</h3>
-          <button class="btn-close-modal" id="btnCloseSeriesModal">&times;</button>
-        </div>
-        <div class="modal-body">
-          <div class="series-options-list">
-            <button type="button" class="series-card-option active" data-serie="a">
-              <div class="series-card-content">
-                <div class="series-card-badge badge-a">A</div>
-                <div class="series-card-text">
-                  <strong>Brasileirão Série A</strong>
-                  <span>Primeira Divisão</span>
-                </div>
-              </div>
-              <span class="series-check-icon">✓</span>
-            </button>
-
-            <button type="button" class="series-card-option" data-serie="b">
-              <div class="series-card-content">
-                <div class="series-card-badge badge-b">B</div>
-                <div class="series-card-text">
-                  <strong>Brasileirão Série B</strong>
-                  <span>Segunda Divisão</span>
-                </div>
-              </div>
-              <span class="series-check-icon">✓</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="sync.js"></script>
-  <script src="jogos.js"></script>
+<body style="background:#0f172a;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif;">
+  <p>Carregando jogos...</p>
 </body>
 </html>
-

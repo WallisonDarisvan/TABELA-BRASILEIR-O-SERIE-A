@@ -5,6 +5,7 @@
 
 // Estado da Aplicação
 const state = {
+  tela: 'tabela', // 'tabela' ou 'jogos'
   serie: 'a', // 'a' ou 'b'
   times: [],
   ordenacao: {
@@ -21,7 +22,10 @@ const elements = {
   tabelaCorpo: document.getElementById('tabelaCorpo'),
   btnOpenSeriesModal: document.getElementById('btnOpenSeriesModal'),
   currentSeriesLabel: document.getElementById('currentSeriesLabel'),
-  btnIrParaJogos: document.getElementById('btnIrParaJogos'),
+  btnToggleView: document.getElementById('btnToggleView'),
+  navViewText: document.getElementById('navViewText'),
+  viewTabela: document.getElementById('viewTabela'),
+  viewJogos: document.getElementById('viewJogos'),
 
   // Modal de seleção de série
   seriesModal: document.getElementById('seriesModal'),
@@ -45,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const nomeExibicao = state.serie === 'b' ? 'Série B' : 'Série A';
   if (elements.currentSeriesLabel) elements.currentSeriesLabel.textContent = nomeExibicao;
-  if (elements.btnIrParaJogos) elements.btnIrParaJogos.href = `jogos.html?serie=${state.serie}`;
   document.title = `Tabela Brasileirão ${nomeExibicao} | Classificação Interativa`;
 
   elements.seriesOptions.forEach(btn => {
@@ -56,25 +59,51 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Se veio pela URL para ver jogos
+  const paramView = urlParams.get('view');
+  if (paramView === 'jogos') {
+    alternarTela('jogos', false);
+  }
+
   setupEventListeners();
   setupSSE();
   // Carrega imediatamente enquanto o SSE conecta
   carregarDados();
 });
 
+// Alterna instantaneamente entre a visão de Tabela e a visão de Jogos
+function alternarTela(tela, sync = true) {
+  state.tela = tela;
+  const viewTabela = document.getElementById('viewTabela');
+  const viewJogos = document.getElementById('viewJogos');
+  const navViewText = document.getElementById('navViewText');
+
+  if (tela === 'jogos') {
+    if (viewTabela) viewTabela.style.display = 'none';
+    if (viewJogos) viewJogos.style.display = 'flex';
+    if (navViewText) navViewText.textContent = 'TABELA';
+    if (typeof window.carregarJogos === 'function') {
+      window.carregarJogos();
+    }
+  } else {
+    if (viewJogos) viewJogos.style.display = 'none';
+    if (viewTabela) viewTabela.style.display = 'block';
+    if (navViewText) navViewText.textContent = 'JOGOS';
+  }
+
+  if (sync && typeof SYNC !== 'undefined') {
+    SYNC.send({ tela, serie: state.serie });
+  }
+}
+window.alternarTela = alternarTela;
+
 // Configura os ouvintes de eventos da UI
 function setupEventListeners() {
-  // Clique no botão JOGOS (notifica todas as telas antes de navegar)
-  if (elements.btnIrParaJogos) {
-    elements.btnIrParaJogos.addEventListener('click', (e) => {
-      e.preventDefault();
-      const destino = elements.btnIrParaJogos.href;
-      if (typeof SYNC !== 'undefined') {
-        SYNC.send({ tela: 'jogos', serie: state.serie });
-      }
-      setTimeout(() => {
-        window.location.href = destino;
-      }, 40);
+  // Clique no botão de alternar visão (TABELA ↔ JOGOS)
+  if (elements.btnToggleView) {
+    elements.btnToggleView.addEventListener('click', () => {
+      const proximaTela = state.tela === 'jogos' ? 'tabela' : 'jogos';
+      alternarTela(proximaTela, true);
     });
   }
 
@@ -166,13 +195,15 @@ async function trocarSerie(novaSerie, sync = true) {
 
   // Atualiza título da página
   document.title = `Tabela Brasileirão ${nomeExibicao} | Classificação Interativa`;
-  if (elements.btnIrParaJogos) {
-    elements.btnIrParaJogos.href = `jogos.html?serie=${novaSerie}`;
+
+  // Sincroniza estado de série com o módulo de jogos
+  if (typeof window.trocarSerieJogos === 'function') {
+    window.trocarSerieJogos(novaSerie, false);
   }
 
   // Sincroniza com as outras telas abertas se a ação partiu deste dispositivo
   if (sync && typeof SYNC !== 'undefined') {
-    SYNC.send({ serie: novaSerie, tela: 'tabela' });
+    SYNC.send({ serie: novaSerie, tela: state.tela });
   }
 
   // Atualiza botões ativos no modal
@@ -184,26 +215,41 @@ async function trocarSerie(novaSerie, sync = true) {
     }
   });
 
-  // Exibe estado de carregamento
-  elements.tabelaCorpo.innerHTML = `
-    <tr class="loading-row">
-      <td colspan="5">
-        <div class="loading-container">
-          <div class="spinner"></div>
-          <p>Carregando tabela oficial da ${nomeExibicao}...</p>
-        </div>
-      </td>
-    </tr>
-  `;
-
-  await carregarDados();
+  if (state.tela === 'jogos') {
+    if (typeof window.carregarJogos === 'function') {
+      window.carregarJogos();
+    }
+  } else {
+    // Exibe estado de carregamento na tabela
+    if (elements.tabelaCorpo) {
+      elements.tabelaCorpo.innerHTML = `
+        <tr class="loading-row">
+          <td colspan="5">
+            <div class="loading-container">
+              <div class="spinner"></div>
+              <p>Carregando tabela oficial da ${nomeExibicao}...</p>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+    await carregarDados();
+  }
 }
 
 // Ouvinte de sincronização global recebida de outros dispositivos (ex: celular comandando a TV)
 window.onSyncStateReceived = (data) => {
+  // Sincroniza visualização da tela (Tabela ↔ Jogos)
+  if (data.tela && data.tela !== state.tela) {
+    alternarTela(data.tela, false);
+  }
+
   // Sincroniza Série se mudou
   if (data.serie && data.serie !== state.serie) {
     trocarSerie(data.serie, false);
+    if (typeof window.trocarSerieJogos === 'function') {
+      window.trocarSerieJogos(data.serie, false);
+    }
   }
 
   // Sincroniza ordenação se mudou
@@ -211,6 +257,11 @@ window.onSyncStateReceived = (data) => {
     state.ordenacao = data.ordenacao;
     atualizarIndicadoresOrdenacao();
     renderizarTabela();
+  }
+
+  // Sincroniza rodada se mudou
+  if (data.rodada && typeof window.mudarRodada === 'function') {
+    window.mudarRodada(data.rodada, false);
   }
 };
 

@@ -51,28 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
     gamesState.rodada = parseInt(paramRodada, 10);
   }
 
-  atualizarHeaderSerie();
   setupGamesEventListeners();
-  setupGamesSSE();
   carregarJogos();
 });
 
 // Configura os ouvintes de eventos da página de jogos
 function setupGamesEventListeners() {
-  // Botão Voltar para Tabela (sincroniza tela com os outros aparelhos)
-  if (gamesElements.btnVoltarTabela) {
-    gamesElements.btnVoltarTabela.addEventListener('click', (e) => {
-      e.preventDefault();
-      const destino = gamesElements.btnVoltarTabela.href;
-      if (typeof SYNC !== 'undefined') {
-        SYNC.send({ tela: 'tabela', serie: gamesState.serie });
-      }
-      setTimeout(() => {
-        window.location.href = destino;
-      }, 40);
-    });
-  }
-
   // Navegação de Rodada
   if (gamesElements.btnPrevRound) {
     gamesElements.btnPrevRound.addEventListener('click', () => {
@@ -90,37 +74,8 @@ function setupGamesEventListeners() {
     });
   }
 
-  // Modal de Série
-  if (gamesElements.btnOpenSeriesModal) {
-    gamesElements.btnOpenSeriesModal.addEventListener('click', () => {
-      if (gamesElements.seriesModal) gamesElements.seriesModal.style.display = 'flex';
-    });
-  }
-
-  if (gamesElements.btnCloseSeriesModal) {
-    gamesElements.btnCloseSeriesModal.addEventListener('click', fecharModalSeries);
-  }
-
-  if (gamesElements.seriesModal) {
-    gamesElements.seriesModal.addEventListener('click', (e) => {
-      if (e.target === gamesElements.seriesModal) fecharModalSeries();
-    });
-  }
-
-  gamesElements.seriesOptions.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const novaSerie = btn.dataset.serie;
-      fecharModalSeries();
-      if (novaSerie && novaSerie !== gamesState.serie) {
-        trocarSerieJogos(novaSerie, true);
-      }
-    });
-  });
-
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && gamesElements.seriesModal && gamesElements.seriesModal.style.display !== 'none') {
-      fecharModalSeries();
-    } else if (e.key === 'ArrowLeft') {
+    if (e.key === 'ArrowLeft') {
       if (gamesState.rodada > 1 && !gamesState.carregando) {
         mudarRodada(gamesState.rodada - 1, true);
       }
@@ -140,51 +95,6 @@ function mudarRodada(novaRodada, sync = true) {
   }
   carregarJogos();
 }
-
-function fecharModalSeries() {
-  if (gamesElements.seriesModal) {
-    gamesElements.seriesModal.style.display = 'none';
-  }
-}
-
-// Configura SSE para escutar sincronização de outras telas (ex: celular comandando a TV)
-function setupGamesSSE() {
-  if (!window.EventSource) return;
-
-  const eventSource = new EventSource('/api/events');
-
-  // Recebe eventos de autenticação por PIN
-  eventSource.addEventListener('auth_state', (event) => {
-    try {
-      const authData = JSON.parse(event.data);
-      if (typeof SYNC !== 'undefined') {
-        SYNC.handleAuthEvent(authData);
-      }
-    } catch (e) {
-      console.error('Erro ao processar auth_state em jogos:', e);
-    }
-  });
-
-  eventSource.addEventListener('sync_state', (event) => {
-    try {
-      const syncData = JSON.parse(event.data);
-      if (typeof SYNC !== 'undefined') {
-        SYNC.handleSyncEvent(syncData);
-      }
-    } catch (e) {
-      console.error('Erro ao processar sync_state em jogos:', e);
-    }
-  });
-}
-
-// Ouvinte de sincronização global recebida de outro aparelho
-window.onSyncStateReceived = (data) => {
-  if (data.serie && data.serie !== gamesState.serie) {
-    trocarSerieJogos(data.serie, false);
-  } else if (data.rodada && data.rodada !== gamesState.rodada) {
-    mudarRodada(data.rodada, false);
-  }
-};
 
 // Atualiza a visualização do cabeçalho da Série
 function atualizarHeaderSerie() {
@@ -219,6 +129,19 @@ function trocarSerieJogos(novaSerie, sync = true) {
 
 // Carrega os dados dos jogos da rodada via endpoint do backend
 async function carregarJogos() {
+  if (window.state && window.state.serie) {
+    gamesState.serie = window.state.serie;
+  }
+
+  // Atualiza referências do DOM se necessário
+  gamesElements.btnPrevRound = document.getElementById('btnPrevRound');
+  gamesElements.btnNextRound = document.getElementById('btnNextRound');
+  gamesElements.roundTitleText = document.getElementById('roundTitleText');
+  gamesElements.roundBadgeCurrent = document.getElementById('roundBadgeCurrent');
+  gamesElements.roundSubtitle = document.getElementById('roundSubtitle');
+  gamesElements.gamesColLeft = document.getElementById('gamesColLeft');
+  gamesElements.gamesColRight = document.getElementById('gamesColRight');
+
   gamesState.carregando = true;
   atualizarBotoesNavegacao();
   exibirLoading();
@@ -246,6 +169,11 @@ async function carregarJogos() {
     atualizarBotoesNavegacao();
   }
 }
+
+// Expõe globalmente para alternância de abas e sincronização
+window.carregarJogos = carregarJogos;
+window.mudarRodada = mudarRodada;
+window.trocarSerieJogos = trocarSerieJogos;
 
 // Atualiza o estado dos botões de avançar/voltar rodada
 function atualizarBotoesNavegacao() {
