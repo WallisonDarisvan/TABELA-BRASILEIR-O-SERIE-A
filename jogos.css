@@ -3,30 +3,66 @@
  * Layout em 2 colunas (5 jogos em cada), navegador de rodadas e tema moderno branco/verde
  */
 
-/* Navegador Compacto de Rodadas no Cabeçalho */
+/* Navegador Compacto e Menos Poluído no Cabeçalho */
 .header-round-nav {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 10px;
   user-select: none;
 }
 
-.header-round-nav-top {
-  display: flex;
+.header-round-arrow {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  background: transparent;
+  color: #1e293b;
+  border: none;
+  padding: 6px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.header-round-arrow:hover:not(:disabled) {
+  background: rgba(0, 168, 84, 0.12);
+  color: #008744;
+  transform: scale(1.15);
+}
+
+.header-round-arrow:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.header-round-arrow svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  display: block;
+}
+
+.header-round-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 3px;
 }
 
 .header-round-title {
   font-family: var(--font-heading, 'Outfit', sans-serif);
-  font-size: 1.15rem;
+  font-size: 1.22rem;
   font-weight: 800;
   color: #0f172a;
   letter-spacing: -0.01em;
   text-transform: uppercase;
   line-height: 1.1;
+  white-space: nowrap;
 }
 
 .header-round-badge {
@@ -36,54 +72,12 @@
   background: #ecfdf5;
   color: #008744;
   border: 1px solid rgba(0, 168, 84, 0.25);
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: 9999px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  line-height: 1;
-}
-
-.header-round-nav-bottom {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.header-round-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  background: #ffffff;
-  color: #1e293b;
-  border: 1.2px solid #cbd5e1;
-  padding: 4px 14px;
-  border-radius: 9999px;
-  font-family: var(--font-heading, 'Outfit', sans-serif);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  user-select: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.header-round-btn:hover:not(:disabled) {
-  background: #f8fafc;
-  border-color: #00a854;
-  color: #008744;
-}
-
-.header-round-btn:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.header-round-btn svg {
-  width: 12px;
-  height: 12px;
-  flex-shrink: 0;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 /* Container Rolável de Jogos */

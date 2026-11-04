@@ -11,8 +11,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style.css?v=2.8">
-  <link rel="stylesheet" href="jogos.css?v=2.8">
+  <link rel="stylesheet" href="style.css?v=2.9">
+  <link rel="stylesheet" href="jogos.css?v=2.9">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300b04f'><circle cx='12' cy='12' r='10'/><path d='M12 4a8 8 0 0 1 8 8c0 2.2-.9 4.2-2.3 5.7L12 12V4z' fill='%23ffffff'/></svg>">
 </head>
 <body>
@@ -45,26 +45,24 @@
               <span id="navViewText">JOGOS</span>
             </button>
 
-            <!-- Navegador Compacto de Rodadas (visível na tela de Jogos conforme print) -->
+            <!-- Navegador Compacto de Rodadas (conforme o print do usuário) -->
             <div class="header-round-nav" id="headerRoundNav" style="display: none;">
-              <div class="header-round-nav-top">
+              <button type="button" class="header-round-arrow" id="btnPrevRound" onclick="window.voltarRodada && window.voltarRodada()" title="Rodada Anterior (Seta Esquerda)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+
+              <div class="header-round-center">
                 <span class="header-round-title" id="roundTitleText">--ª RODADA</span>
                 <span class="header-round-badge" id="roundBadgeCurrent" style="display: none;">RODADA ATUAL</span>
               </div>
-              <div class="header-round-nav-bottom">
-                <button type="button" class="header-round-btn" id="btnPrevRound" onclick="window.voltarRodada && window.voltarRodada()" title="Ver rodada anterior (Seta Esquerda)">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                  </svg>
-                  <span>Anterior</span>
-                </button>
-                <button type="button" class="header-round-btn" id="btnNextRound" onclick="window.avancarRodada && window.avancarRodada()" title="Ver próxima rodada (Seta Direita)">
-                  <span>Próxima</span>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                  </svg>
-                </button>
-              </div>
+
+              <button type="button" class="header-round-arrow" id="btnNextRound" onclick="window.avancarRodada && window.avancarRodada()" title="Próxima Rodada (Seta Direita)">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
             </div>
           </div>
           <img src="NC%20SPORTS%20LOGO.png" alt="NC Sports Logo" class="header-nc-logo" onerror="this.src='nc-sports-logo.png'">
