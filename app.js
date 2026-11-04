@@ -64,6 +64,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Configura os ouvintes de eventos da UI
 function setupEventListeners() {
+  // Clique no botão JOGOS (notifica todas as telas antes de navegar)
+  if (elements.btnIrParaJogos) {
+    elements.btnIrParaJogos.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (typeof SYNC !== 'undefined') {
+        SYNC.send({ tela: 'jogos', serie: state.serie });
+      }
+      window.location.href = elements.btnIrParaJogos.href;
+    });
+  }
+
   // Modal de troca de Série
   if (elements.btnOpenSeriesModal) {
     elements.btnOpenSeriesModal.addEventListener('click', abrirModalSeries);
@@ -85,7 +96,7 @@ function setupEventListeners() {
       const novaSerie = btn.dataset.serie;
       fecharModalSeries();
       if (novaSerie && novaSerie !== state.serie) {
-        trocarSerie(novaSerie);
+        trocarSerie(novaSerie, true);
       }
     });
   });
@@ -103,6 +114,11 @@ function setupEventListeners() {
       }
       atualizarIndicadoresOrdenacao();
       renderizarTabela();
+
+      // Sincroniza ordenação instantaneamente com as outras telas (ex: TV)
+      if (typeof SYNC !== 'undefined') {
+        SYNC.send({ ordenacao: state.ordenacao, tela: 'tabela' });
+      }
     });
   });
 
@@ -136,7 +152,7 @@ function fecharModalSeries() {
 }
 
 // Troca a série exibida e busca os dados correspondentes
-async function trocarSerie(novaSerie) {
+async function trocarSerie(novaSerie, sync = true) {
   state.serie = novaSerie;
   const nomeExibicao = novaSerie === 'b' ? 'Série B' : 'Série A';
 
@@ -149,6 +165,11 @@ async function trocarSerie(novaSerie) {
   document.title = `Tabela Brasileirão ${nomeExibicao} | Classificação Interativa`;
   if (elements.btnIrParaJogos) {
     elements.btnIrParaJogos.href = `jogos.html?serie=${novaSerie}`;
+  }
+
+  // Sincroniza com as outras telas abertas se a ação partiu deste dispositivo
+  if (sync && typeof SYNC !== 'undefined') {
+    SYNC.send({ serie: novaSerie, tela: 'tabela' });
   }
 
   // Atualiza botões ativos no modal
@@ -175,6 +196,21 @@ async function trocarSerie(novaSerie) {
   await carregarDados();
 }
 
+// Ouvinte de sincronização global recebida de outros dispositivos (ex: celular comandando a TV)
+window.onSyncStateReceived = (data) => {
+  // Sincroniza Série se mudou
+  if (data.serie && data.serie !== state.serie) {
+    trocarSerie(data.serie, false);
+  }
+
+  // Sincroniza ordenação se mudou
+  if (data.ordenacao && (data.ordenacao.coluna !== state.ordenacao.coluna || data.ordenacao.direcao !== state.ordenacao.direcao)) {
+    state.ordenacao = data.ordenacao;
+    atualizarIndicadoresOrdenacao();
+    renderizarTabela();
+  }
+};
+
 // Configuração de Server-Sent Events (SSE) para atualização automática em tempo real
 function setupSSE() {
   if (!window.EventSource) {
@@ -183,6 +219,18 @@ function setupSSE() {
   }
 
   const eventSource = new EventSource('/api/events');
+
+  // Recebe eventos de sincronização entre telas (espelhamento em tempo real)
+  eventSource.addEventListener('sync_state', (event) => {
+    try {
+      const syncData = JSON.parse(event.data);
+      if (typeof SYNC !== 'undefined') {
+        SYNC.handleSyncEvent(syncData);
+      }
+    } catch (err) {
+      console.error('Erro ao processar sync_state via SSE:', err);
+    }
+  });
 
   // Recebe eventos da tabela transmitidos pelo servidor
   eventSource.addEventListener('tabela', (event) => {

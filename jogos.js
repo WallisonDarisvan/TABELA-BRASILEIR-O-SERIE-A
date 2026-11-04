@@ -53,17 +53,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   atualizarHeaderSerie();
   setupGamesEventListeners();
+  setupGamesSSE();
   carregarJogos();
 });
 
 // Configura os ouvintes de eventos da página de jogos
 function setupGamesEventListeners() {
+  // Botão Voltar para Tabela (sincroniza tela com os outros aparelhos)
+  if (gamesElements.btnVoltarTabela) {
+    gamesElements.btnVoltarTabela.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (typeof SYNC !== 'undefined') {
+        SYNC.send({ tela: 'tabela', serie: gamesState.serie });
+      }
+      window.location.href = gamesElements.btnVoltarTabela.href;
+    });
+  }
+
   // Navegação de Rodada
   if (gamesElements.btnPrevRound) {
     gamesElements.btnPrevRound.addEventListener('click', () => {
       if (gamesState.rodada > 1 && !gamesState.carregando) {
-        gamesState.rodada--;
-        carregarJogos();
+        mudarRodada(gamesState.rodada - 1, true);
       }
     });
   }
@@ -71,8 +82,7 @@ function setupGamesEventListeners() {
   if (gamesElements.btnNextRound) {
     gamesElements.btnNextRound.addEventListener('click', () => {
       if (gamesState.rodada < gamesState.totalRodadas && !gamesState.carregando) {
-        gamesState.rodada++;
-        carregarJogos();
+        mudarRodada(gamesState.rodada + 1, true);
       }
     });
   }
@@ -99,7 +109,7 @@ function setupGamesEventListeners() {
       const novaSerie = btn.dataset.serie;
       fecharModalSeries();
       if (novaSerie && novaSerie !== gamesState.serie) {
-        trocarSerieJogos(novaSerie);
+        trocarSerieJogos(novaSerie, true);
       }
     });
   });
@@ -109,16 +119,23 @@ function setupGamesEventListeners() {
       fecharModalSeries();
     } else if (e.key === 'ArrowLeft') {
       if (gamesState.rodada > 1 && !gamesState.carregando) {
-        gamesState.rodada--;
-        carregarJogos();
+        mudarRodada(gamesState.rodada - 1, true);
       }
     } else if (e.key === 'ArrowRight') {
       if (gamesState.rodada < gamesState.totalRodadas && !gamesState.carregando) {
-        gamesState.rodada++;
-        carregarJogos();
+        mudarRodada(gamesState.rodada + 1, true);
       }
     }
   });
+}
+
+// Altera a rodada e sincroniza com todos os aparelhos
+function mudarRodada(novaRodada, sync = true) {
+  gamesState.rodada = novaRodada;
+  if (sync && typeof SYNC !== 'undefined') {
+    SYNC.send({ rodada: novaRodada, serie: gamesState.serie, tela: 'jogos' });
+  }
+  carregarJogos();
 }
 
 function fecharModalSeries() {
@@ -126,6 +143,32 @@ function fecharModalSeries() {
     gamesElements.seriesModal.style.display = 'none';
   }
 }
+
+// Configura SSE para escutar sincronização de outras telas (ex: celular comandando a TV)
+function setupGamesSSE() {
+  if (!window.EventSource) return;
+
+  const eventSource = new EventSource('/api/events');
+  eventSource.addEventListener('sync_state', (event) => {
+    try {
+      const syncData = JSON.parse(event.data);
+      if (typeof SYNC !== 'undefined') {
+        SYNC.handleSyncEvent(syncData);
+      }
+    } catch (e) {
+      console.error('Erro ao processar sync_state em jogos:', e);
+    }
+  });
+}
+
+// Ouvinte de sincronização global recebida de outro aparelho
+window.onSyncStateReceived = (data) => {
+  if (data.serie && data.serie !== gamesState.serie) {
+    trocarSerieJogos(data.serie, false);
+  } else if (data.rodada && data.rodada !== gamesState.rodada) {
+    mudarRodada(data.rodada, false);
+  }
+};
 
 // Atualiza a visualização do cabeçalho da Série
 function atualizarHeaderSerie() {
@@ -148,10 +191,13 @@ function atualizarHeaderSerie() {
 }
 
 // Troca de Série na tela de jogos
-function trocarSerieJogos(novaSerie) {
+function trocarSerieJogos(novaSerie, sync = true) {
   gamesState.serie = novaSerie;
   gamesState.rodada = null; // reseta para pegar a rodada atual da nova série
   atualizarHeaderSerie();
+  if (sync && typeof SYNC !== 'undefined') {
+    SYNC.send({ serie: novaSerie, rodada: null, tela: 'jogos' });
+  }
   carregarJogos();
 }
 
@@ -334,3 +380,4 @@ function exibirErro() {
   `;
   gamesElements.gamesColRight.innerHTML = '';
 }
+

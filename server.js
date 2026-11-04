@@ -46,6 +46,33 @@ const dadosEmMemoria = {
   b: null
 };
 
+// Estado Global Compartilhado entre todas as telas abertas (TV, Celular, PC, Tablet, etc.)
+let estadoGlobal = {
+  tela: 'tabela', // 'tabela' ou 'jogos'
+  serie: 'a',     // 'a' ou 'b'
+  rodada: null,   // número da rodada exibida ou null (rodada atual)
+  ordenacao: {
+    coluna: 'pontos',
+    direcao: 'desc'
+  },
+  atualizadoEm: new Date().toISOString()
+};
+
+// Transmite o estado sincronizado para todas as telas abertas
+function broadcastSyncState(senderId = null) {
+  if (sseClients.size === 0) return;
+
+  const payload = `event: sync_state\ndata: ${JSON.stringify({ ...estadoGlobal, senderId })}\n\n`;
+  for (const client of sseClients) {
+    try {
+      client.write(payload);
+    } catch (err) {
+      sseClients.delete(client);
+    }
+  }
+  console.log(`📡 Sincronização global transmitida para ${sseClients.size} tela(s) ativa(s):`, JSON.stringify(estadoGlobal));
+}
+
 // Garante que o diretório de dados existe
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -377,8 +404,11 @@ const server = http.createServer(async (req, res) => {
     sseClients.add(res);
     console.log(`🔌 Novo cliente SSE conectado. Total de clientes: ${sseClients.size}`);
 
+    // Envia o estado global compartilhado para o novo cliente sincronizar imediatamente
+    res.write(`event: sync_state\ndata: ${JSON.stringify(estadoGlobal)}\n\n`);
+
     // Envia os dados atuais da Série solicitada (ou Série A por padrão) imediatamente
-    const serie = (reqUrl.searchParams.get('serie') || 'a').toLowerCase();
+    const serie = (reqUrl.searchParams.get('serie') || estadoGlobal.serie || 'a').toLowerCase();
     try {
       const dadosAtuais = await getDadosTabela(serie, false);
       res.write(`event: tabela\ndata: ${JSON.stringify(dadosAtuais)}\n\n`);
@@ -390,6 +420,41 @@ const server = http.createServer(async (req, res) => {
       sseClients.delete(res);
       console.log(`🔌 Cliente SSE desconectado. Restantes: ${sseClients.size}`);
     });
+    return;
+  }
+
+  // Endpoint de Sincronização em Tempo Real (Controle Compartilhado entre todas as telas)
+  if (reqUrl.pathname === '/api/sync' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const clientId = payload.clientId || null;
+        const updates = payload.state || {};
+
+        if (updates.tela) estadoGlobal.tela = updates.tela;
+        if (updates.serie) estadoGlobal.serie = updates.serie;
+        if (updates.rodada !== undefined) estadoGlobal.rodada = updates.rodada;
+        if (updates.ordenacao) estadoGlobal.ordenacao = updates.ordenacao;
+        estadoGlobal.atualizadoEm = new Date().toISOString();
+
+        broadcastSyncState(clientId);
+
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' });
+        res.end(JSON.stringify({ ok: true, estado: estadoGlobal }));
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json; charset=UTF-8' });
+        res.end(JSON.stringify({ erro: 'Payload inválido', detalhe: err.message }));
+      }
+    });
+    return;
+  }
+
+  // Endpoint GET para consultar o estado atual
+  if (reqUrl.pathname === '/api/sync' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' });
+    res.end(JSON.stringify(estadoGlobal));
     return;
   }
 
