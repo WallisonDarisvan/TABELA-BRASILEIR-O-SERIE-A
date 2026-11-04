@@ -220,6 +220,18 @@ function setupSSE() {
 
   const eventSource = new EventSource('/api/events');
 
+  // Recebe eventos de autenticação por PIN
+  eventSource.addEventListener('auth_state', (event) => {
+    try {
+      const authData = JSON.parse(event.data);
+      if (typeof SYNC !== 'undefined') {
+        SYNC.handleAuthEvent(authData);
+      }
+    } catch (err) {
+      console.error('Erro ao processar auth_state via SSE:', err);
+    }
+  });
+
   // Recebe eventos de sincronização entre telas (espelhamento em tempo real)
   eventSource.addEventListener('sync_state', (event) => {
     try {

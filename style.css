@@ -854,3 +854,145 @@ body {
     background-color: #ffffff;
   }
 }
+
+/* ========================================================
+   MODAL DE BLOQUEIO / PIN DE ACESSO
+   ======================================================== */
+.pin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: modalEnter 0.25s ease-out;
+}
+
+.pin-modal-card {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 36px 30px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-subtle);
+  position: relative;
+}
+
+.pin-icon-wrapper {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #ecfdf5;
+  color: var(--accent-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+  box-shadow: 0 6px 18px rgba(0, 168, 84, 0.22);
+}
+
+.pin-icon-wrapper svg {
+  width: 28px;
+  height: 28px;
+}
+
+.pin-modal-title {
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.pin-modal-desc {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 20px;
+}
+
+.pin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pin-input-field {
+  width: 100%;
+  font-family: var(--font-heading);
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  text-align: center;
+  padding: 12px 16px;
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  outline: none;
+  background: #f8fafc;
+  color: var(--text-main);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.pin-input-field:focus {
+  border-color: var(--accent-green);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(0, 168, 84, 0.15);
+}
+
+.pin-error-msg {
+  color: #ef4444;
+  font-size: 0.88rem;
+  font-weight: 600;
+  min-height: 20px;
+  transition: opacity 0.2s ease;
+}
+
+.pin-submit-btn {
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--accent-green);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 168, 84, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pin-submit-btn:hover:not(:disabled) {
+  background: var(--accent-green-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 168, 84, 0.35);
+}
+
+.pin-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Shake de erro */
+.pin-shake {
+  animation: pinShake 0.4s ease-in-out;
+}
+
+@keyframes pinShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}

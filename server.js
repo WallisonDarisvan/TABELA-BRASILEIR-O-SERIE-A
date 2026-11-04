@@ -58,6 +58,27 @@ let estadoGlobal = {
   atualizadoEm: new Date().toISOString()
 };
 
+// PIN de Acesso Padrão (sem necessidade de banco de dados)
+const ACCESS_PIN = process.env.ACCESS_PIN || '392817';
+
+// Controle de sessão: quando não houver nenhuma tela ativa, bloqueia novamente
+let sistemaLiberado = false;
+let zeroClientsTimer = null;
+
+// Transmite o status de autenticação (bloqueado / liberado) para todas as telas
+function broadcastAuthState(liberado) {
+  if (sseClients.size === 0) return;
+
+  const payload = `event: auth_state\ndata: ${JSON.stringify({ liberado })}\n\n`;
+  for (const client of sseClients) {
+    try {
+      client.write(payload);
+    } catch (err) {
+      sseClients.delete(client);
+    }
+  }
+}
+
 // Transmite o estado sincronizado para todas as telas abertas
 function broadcastSyncState(senderId = null) {
   if (sseClients.size === 0) return;
@@ -404,6 +425,15 @@ const server = http.createServer(async (req, res) => {
     sseClients.add(res);
     console.log(`🔌 Novo cliente SSE conectado. Total de clientes: ${sseClients.size}`);
 
+    // Cancela timer de bloqueio se houver um novo cliente conectando
+    if (zeroClientsTimer) {
+      clearTimeout(zeroClientsTimer);
+      zeroClientsTimer = null;
+    }
+
+    // Envia o status de autenticação (bloqueado/liberado)
+    res.write(`event: auth_state\ndata: ${JSON.stringify({ liberado: sistemaLiberado })}\n\n`);
+
     // Envia o estado global compartilhado para o novo cliente sincronizar imediatamente
     res.write(`event: sync_state\ndata: ${JSON.stringify(estadoGlobal)}\n\n`);
 
@@ -419,7 +449,59 @@ const server = http.createServer(async (req, res) => {
     req.on('close', () => {
       sseClients.delete(res);
       console.log(`🔌 Cliente SSE desconectado. Restantes: ${sseClients.size}`);
+
+      // Quando não houver mais nenhuma tela ativa, bloqueia o acesso após 10s de tolerância
+      if (sseClients.size === 0) {
+        if (!zeroClientsTimer) {
+          zeroClientsTimer = setTimeout(() => {
+            if (sseClients.size === 0) {
+              console.log('🔒 Nenhuma tela ativa. Acesso bloqueado para a próxima sessão!');
+              sistemaLiberado = false;
+            }
+            zeroClientsTimer = null;
+          }, 10000);
+        }
+      }
     });
+    return;
+  }
+
+  // Endpoint de Autenticação / Desbloqueio por PIN
+  if (reqUrl.pathname === '/api/auth/unlock' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const pinEnviado = String(payload.pin || '').trim();
+
+        if (pinEnviado === ACCESS_PIN) {
+          sistemaLiberado = true;
+          if (zeroClientsTimer) {
+            clearTimeout(zeroClientsTimer);
+            zeroClientsTimer = null;
+          }
+          console.log('🔓 PIN correto (392817)! Telas liberadas com sucesso.');
+          broadcastAuthState(true);
+
+          res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' });
+          res.end(JSON.stringify({ ok: true, liberado: true }));
+        } else {
+          res.writeHead(401, { 'Content-Type': 'application/json; charset=UTF-8' });
+          res.end(JSON.stringify({ ok: false, erro: 'PIN incorreto. Tente novamente.' }));
+        }
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json; charset=UTF-8' });
+        res.end(JSON.stringify({ ok: false, erro: 'Payload inválido' }));
+      }
+    });
+    return;
+  }
+
+  // Endpoint para consultar status de autenticação
+  if (reqUrl.pathname === '/api/auth/status' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=UTF-8' });
+    res.end(JSON.stringify({ liberado: sistemaLiberado }));
     return;
   }
 

@@ -149,6 +149,19 @@ function setupGamesSSE() {
   if (!window.EventSource) return;
 
   const eventSource = new EventSource('/api/events');
+
+  // Recebe eventos de autenticação por PIN
+  eventSource.addEventListener('auth_state', (event) => {
+    try {
+      const authData = JSON.parse(event.data);
+      if (typeof SYNC !== 'undefined') {
+        SYNC.handleAuthEvent(authData);
+      }
+    } catch (e) {
+      console.error('Erro ao processar auth_state em jogos:', e);
+    }
+  });
+
   eventSource.addEventListener('sync_state', (event) => {
     try {
       const syncData = JSON.parse(event.data);
